@@ -15,6 +15,7 @@ An intelligent Agentic RAG workspace that connects live project information, rea
 [![LangGraph](https://img.shields.io/badge/LangGraph-Agentic_Orchestrator-93D4D8.svg?style=flat-square&logoColor=0B2224)](https://langchain-ai.github.io/langgraph/)
 [![Model Context Protocol](https://img.shields.io/badge/MCP-2.x_Stdio_Protocol-336269.svg?style=flat-square)](https://modelcontextprotocol.io/)
 [![PostgreSQL](https://img.shields.io/badge/Storage-PostgreSQL_%2B_pgvector_%2F_SQLite-336269.svg?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-336269.svg?style=flat-square)](LICENSE)
 
 [Product Overview](#product-overview) •
 [System Architecture](#system-architecture) •
@@ -444,4 +445,4 @@ pulsedesk-ai/
 
 ## License
 
-This project is currently private and maintained for portfolio demonstration and technical evaluation purposes. All rights reserved.
+This project is licensed under the [MIT License](LICENSE) — see the [LICENSE](LICENSE) file for details.
