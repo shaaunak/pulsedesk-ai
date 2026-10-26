@@ -1,0 +1,12 @@
+digraph demo {
+  graph [rankdir=LR,bgcolor="#FAFBFC",pad=0.4,nodesep=0.4,ranksep=0.75,splines=polyline,label="PULSEDESK  /  90-SECOND INTERVIEW DEMO",labelloc=t,fontname="DejaVu Sans",fontsize=19,fontcolor="#1C2835"];
+  node [shape=box,style="rounded,filled",fillcolor="white",color="#C8D1DC",penwidth=1.1,fontname="DejaVu Sans",fontcolor="#1C2835",fontsize=10,margin="0.18,0.13"];
+  edge [color="#8394A7",penwidth=1.3,arrowsize=0.7];
+  a [label="1 · Ask\nWhat's blocking Alpha?",fillcolor="#EAF2FF"];
+  b [label="2 · See evidence\nReal issue and mail sources",fillcolor="#DDF5EF"];
+  c [label="3 · Inspect run\nActual tools + timing"];
+  d [label="4 · Save a priority\nCross-thread durable memory",fillcolor="#DDF5EF"];
+  e [label="5 · Change source state\nDemo fixture: issue closes"];
+  f [label="6 · Ask again\nAnswer updates from evidence",fillcolor="#DDF5EF"];
+  a -> b -> c -> d -> e -> f;
+}

@@ -1,0 +1,70 @@
+{
+  "mode": "SYNTHETIC_DEMO_ONLY",
+  "note": "These are fictional records for reproducible testing. Do not treat as live sources.",
+  "workspace": {
+    "id": "demo-workspace",
+    "name": "Demo Workspace",
+    "project": "Project Alpha"
+  },
+  "github_issues": [
+    {
+      "source_id": "fixture:github:42",
+      "number": 42,
+      "title": "Release CI pipeline failing",
+      "state": "open",
+      "labels": [
+        "release-blocker"
+      ],
+      "updated_at": "2026-10-26T08:00:00Z",
+      "body": "Release pipeline was reopened after a new integration test failure; blocks staging verification.",
+      "url": null
+    },
+    {
+      "source_id": "fixture:github:47",
+      "number": 47,
+      "title": "Improve accessibility labels",
+      "state": "open",
+      "labels": [
+        "enhancement"
+      ],
+      "updated_at": "2026-10-24T17:30:00Z",
+      "body": "Several control labels need improvement before full release.",
+      "url": null
+    }
+  ],
+  "gmail_messages": [
+    {
+      "source_id": "fixture:gmail:approval-1",
+      "subject": "Alpha staging approval",
+      "from": "approver@example.invalid",
+      "received_at": "2026-10-25T13:00:00Z",
+      "body": "Launch approval is on hold until the staging demo passes.",
+      "url": null
+    }
+  ],
+  "memories": [
+    {
+      "id": "fixture:memory:priority",
+      "content": "Project Alpha presentation is higher priority than documentation polish this week.",
+      "provenance": "explicit_user_request",
+      "verified_at": "2026-10-26T08:00:00Z"
+    }
+  ],
+  "expected_evidence_ids": [
+    "fixture:github:42",
+    "fixture:gmail:approval-1",
+    "fixture:memory:priority"
+  ],
+  "historical_snapshots": [
+    {
+      "observed_at": "2026-10-25T18:00:00Z",
+      "source_id": "fixture:github:42",
+      "state": "closed"
+    },
+    {
+      "observed_at": "2026-10-26T08:00:00Z",
+      "source_id": "fixture:github:42",
+      "state": "open"
+    }
+  ]
+}

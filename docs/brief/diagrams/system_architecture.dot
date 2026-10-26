@@ -1,0 +1,27 @@
+digraph architecture {
+  graph [fontname="DejaVu Sans", rankdir=LR, bgcolor="#FAFBFC", pad=0.38, nodesep=0.38, ranksep=0.85, splines=polyline, label="PULSEDESK  /  TARGET SYSTEM ARCHITECTURE", labelloc=t, fontsize=20, fontcolor="#18202C"];
+  node [fontname="DejaVu Sans", fontsize=11, shape=box, style="rounded,filled", penwidth=1.2, margin="0.18,0.13", color="#D4DAE2", fillcolor="#FFFFFF", fontcolor="#222B37"];
+  edge [color="#8090A4", arrowsize=0.7, penwidth=1.2];
+  client [label="React Web App\nChat • Evidence • Memory",fillcolor="#EAF2FF",color="#B7CDF6"];
+  api [label="FastAPI Gateway\nAuth • Chat • Runs",fillcolor="#EAF2FF",color="#B7CDF6"];
+  agent [label="LangGraph Orchestrator\nPlan • Route • Verify",fillcolor="#DDF5EF",color="#81C9B5",penwidth=1.7];
+  tools [label="Typed Tool Gateway"];
+  github [label="GitHub MCP Server\n(real MCP protocol)"];
+  gmail [label="Gmail Read-only\nOAuth connector"];
+  search [label="Retrieval Service\nLive + indexed search"];
+  memory [label="Memory Manager\nThreads + durable facts"];
+  evidence [label="Evidence Normalizer\nSource ID • URL • Freshness"];
+  verify [label="Citation Validator\nClaims ↔ evidence IDs",fillcolor="#FDF2DB",color="#E5C88F"];
+  db [label="Postgres + pgvector\nDocuments • Chunks • Memory",shape=cylinder,fillcolor="#EAF2FF",color="#B7CDF6"];
+  ghapi [label="GitHub API",shape=cylinder];
+  gmapi [label="Gmail API",shape=cylinder];
+  trace [label="LangSmith / run events\nredacted traces",fillcolor="#F1F1F5"];
+  client -> api -> agent -> tools;
+  tools -> github; tools -> gmail;
+  github -> ghapi; gmail -> gmapi;
+  agent -> search; agent -> memory;
+  search -> db [dir=both]; memory -> db [dir=both];
+  github -> evidence; gmail -> evidence; search -> evidence; memory -> evidence;
+  evidence -> verify -> api [constraint=false,color="#1A8F7F",penwidth=1.6];
+  agent -> trace [style=dashed,color="#98A3B3",constraint=false];
+}

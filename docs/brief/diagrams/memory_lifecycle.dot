@@ -1,0 +1,25 @@
+digraph memory {
+  graph [rankdir=LR, bgcolor="#FAFBFC", pad=0.4, nodesep=0.35, ranksep=0.7, splines=polyline,label="PULSEDESK  /  MEMORY RULES AND SOURCE FRESHNESS",labelloc=t,fontname="DejaVu Sans",fontsize=19,fontcolor="#1C2835"];
+  node [shape=box,style="rounded,filled",fillcolor="white",color="#C8D1DC",penwidth=1.2,fontname="DejaVu Sans",fontcolor="#1C2835",fontsize=11,margin="0.17,0.14"];
+  edge [color="#8494A8",penwidth=1.2,arrowsize=0.7,fontname="DejaVu Sans",fontsize=9];
+  chat [label="Conversation input",fillcolor="#EAF2FF"];
+  checkpoint [label="Short-term\nThread checkpoints",fillcolor="#EAF2FF"];
+  classify [label="Is fact durable /\nexplicitly remembered?",shape=diamond,fillcolor="#FCF2DC"];
+  discard [label="Don't store",fillcolor="#F7EEEE"];
+  inspect [label="Sensitivity, duplicate,\nexpiry + provenance"];
+  approval [label="User approval if sensitive\nor ambiguous",fillcolor="#FCF2DC"];
+  store [label="Long-term memory\nPostgres scoped fact",fillcolor="#DDF5EF"];
+  search [label="Relevant memory\nretrieval",fillcolor="#DDF5EF"];
+  live [label="Live source verification\nfor current project state",fillcolor="#EAF2FF"];
+  answer [label="Grounded answer\nMemory ≠ fresh fact",fillcolor="#DDF5EF"];
+  chat -> checkpoint;
+  chat -> classify;
+  classify -> discard [label="no"];
+  classify -> inspect [label="yes"];
+  inspect -> approval [label="sensitive"];
+  approval -> store [label="approved"];
+  inspect -> store [label="suitable"];
+  store -> search;
+  search -> answer;
+  live -> answer [label="prefer for current status"];
+}

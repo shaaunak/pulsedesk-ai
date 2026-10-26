@@ -1,0 +1,30 @@
+digraph agent {
+  graph [rankdir=TB, bgcolor="#FAFBFC", pad=0.4, nodesep=0.35, ranksep=0.48, splines=ortho,label="PULSEDESK  /  BOUNDED AGENT EXECUTION",labelloc=t,fontname="DejaVu Sans",fontsize=19,fontcolor="#1C2835"];
+  node [shape=box,style="rounded,filled",fillcolor="white",color="#C8D1DC",penwidth=1.2,fontname="DejaVu Sans",fontcolor="#1C2835",fontsize=11,margin="0.16,0.13"];
+  edge [color="#8292A6",penwidth=1.2,arrowsize=0.7,fontname="DejaVu Sans",fontsize=9];
+  ask [label="User question",fillcolor="#EAF2FF"];
+  intent [label="Classify intent"];
+  evidence_need [shape=diamond,label="External evidence\nneeded?",fillcolor="#FCF2DC"];
+  direct [label="Simple grounded reply"];
+  plan [label="Bounded plan\nSubtasks + call budget",fillcolor="#DDF5EF"];
+  tools [label="Authorized tool calls\nGitHub • Gmail • RAG • Memory"];
+  normalize [label="Normalize and deduplicate\nSource IDs + freshness"];
+  enough [shape=diamond,label="Enough evidence?",fillcolor="#FCF2DC"];
+  retry [label="One targeted retry\nif budget remains"];
+  partial [label="Partial answer / abstain"];
+  conflict [label="Check contradictory / stale facts"];
+  synthesis [label="Synthesize with evidence IDs"];
+  cite [label="Verify claim ↔ citation",fillcolor="#DDF5EF"];
+  output [label="Answer + sources + execution timeline",fillcolor="#DDF5EF",penwidth=1.7];
+  save [label="Selective memory decision\nPersist thread checkpoint"];
+  ask -> intent -> evidence_need;
+  evidence_need -> direct [label="no"];
+  evidence_need -> plan [label="yes"];
+  plan -> tools -> normalize -> enough;
+  enough -> retry [label="no; room left"];
+  retry -> tools [constraint=false];
+  enough -> partial [label="no; exhausted"];
+  enough -> conflict [label="yes"];
+  conflict -> synthesis -> cite -> output -> save;
+  partial -> output; direct -> output;
+}

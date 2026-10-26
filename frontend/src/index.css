@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #0B2224;
+    color: #F0FDFE;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+  ::selection {
+    background-color: #336269;
+    color: #E6F8F9;
+  }
+}
+
+/* Precision Micro-hairlines and Black Feather Atmospheric Depth */
+.hairline-border {
+  border: 1px solid rgba(147, 212, 216, 0.15);
+}
+
+.hairline-border-strong {
+  border: 1px solid rgba(147, 212, 216, 0.30);
+}
+
+.hairline-border-critical {
+  border: 1px solid rgba(148, 29, 29, 0.60);
+}
+
+.custom-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: #061517;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: #1c454b;
+  border-radius: 4px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: #336269;
+}
+
+.topology-grid {
+  background-size: 28px 28px;
+  background-image: 
+    linear-gradient(to right, rgba(147, 212, 216, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(147, 212, 216, 0.05) 1px, transparent 1px);
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.8; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(1.15); }
+}
+
+.pulse-ring {
+  animation: pulseGlow 2.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}

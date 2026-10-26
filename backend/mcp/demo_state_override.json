@@ -1,0 +1,70 @@
+{
+  "issues": [
+    {
+      "id": 42,
+      "number": 42,
+      "title": "Release CI pipeline failing",
+      "state": "open",
+      "labels": [
+        {
+          "name": "release-blocker",
+          "color": "d73a4a"
+        }
+      ],
+      "body": "Release pipeline was reopened after a new integration test failure; blocks staging verification.",
+      "html_url": "https://github.com/pulsedesk/project-alpha/issues/42",
+      "created_at": "2026-10-24T10:00:00Z",
+      "updated_at": "2026-10-26T13:16:51.521239+00:00",
+      "closed_at": null,
+      "user": {
+        "login": "ci-bot"
+      },
+      "comments": 4
+    },
+    {
+      "id": 47,
+      "number": 47,
+      "title": "Improve accessibility labels",
+      "state": "open",
+      "labels": [
+        {
+          "name": "enhancement",
+          "color": "a2eeef"
+        }
+      ],
+      "body": "Several control labels need improvement before full release.",
+      "html_url": "https://github.com/pulsedesk/project-alpha/issues/47",
+      "created_at": "2026-10-23T14:00:00Z",
+      "updated_at": "2026-10-24T17:30:00Z",
+      "closed_at": null,
+      "user": {
+        "login": "designer1"
+      },
+      "comments": 1
+    }
+  ],
+  "pull_requests": [
+    {
+      "id": 51,
+      "number": 51,
+      "title": "Fix flakiness in e2e auth tests",
+      "state": "open",
+      "draft": false,
+      "html_url": "https://github.com/pulsedesk/project-alpha/pull/51",
+      "created_at": "2026-10-25T15:30:00Z",
+      "updated_at": "2026-10-26T07:45:00Z",
+      "user": {
+        "login": "eng-lead"
+      }
+    }
+  ],
+  "repo_info": {
+    "name": "project-alpha",
+    "full_name": "pulsedesk/project-alpha",
+    "description": "Core workspace services for Project Alpha",
+    "html_url": "https://github.com/pulsedesk/project-alpha",
+    "open_issues_count": 2,
+    "default_branch": "main",
+    "updated_at": "2026-10-26T08:15:00Z"
+  }
+}
