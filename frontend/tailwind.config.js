@@ -8,80 +8,71 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Core Brand Foundation (User Specification)
-        "brand-feather": "#0B2224", // Black Feather: base abyss
-        "brand-storm": "#336269",   // After the Storm: mid teal structure
-        "brand-bloom": "#93D4D8",   // Aqua Bloom: radiant focal accent
-        "brand-socialist": "#941D1D", // Socialist: dark red reserved for critical blockers
+        // Modern Clean SaaS Foundation (Matching Reference Design)
+        background: "#F8FAFC",
+        surface: "#FFFFFF",
+        "surface-subtle": "#F1F5F9",
+        "surface-muted": "#F8FAFC",
+        
+        // Borders
+        border: "#E2E8F0",
+        "border-subtle": "#EDF2F7",
+        
+        // Text
+        "text-primary": "#0F172A",
+        "text-secondary": "#475569",
+        "text-muted": "#64748B",
+        "text-subtle": "#94A3B8",
 
-        // Semantic Backgrounds & Atmospheric Teal Surfaces
-        "background": "#0B2224",
-        "surface": "#0B2224",
-        "surface-container-lowest": "#061517", // deep abyss surface
-        "surface-container-low": "#081a1c",
-        "surface-container": "#0f2c30",
-        "surface-container-high": "#15383d",
-        "surface-container-highest": "#1c454b",
-        "surface-bright": "#245259",
-        "surface-dim": "#061517",
+        // Primary Brand Accent (Clean Indigo/Blue)
+        primary: {
+          DEFAULT: "#2563EB",
+          50: "#EFF6FF",
+          100: "#DBEAFE",
+          200: "#BFDBFE",
+          500: "#3B82F6",
+          600: "#2563EB",
+          700: "#1D4ED8",
+        },
 
-        // Primary Accent: Radiant Aqua Bloom
-        "primary": "#93D4D8",
-        "primary-container": "#336269",
-        "on-primary": "#0B2224",
-        "on-primary-container": "#E6F8F9",
-        "primary-fixed": "#B8E9EC",
-        "primary-fixed-dim": "#93D4D8",
-        "on-primary-fixed": "#042022",
-        "on-primary-fixed-variant": "#14464c",
-        "inverse-primary": "#245259",
+        // Status & Category Card Tints
+        accent: {
+          red: "#EF4444",
+          "red-light": "#FEF2F2",
+          "red-border": "#FEE2E2",
+          
+          blue: "#3B82F6",
+          "blue-light": "#EFF6FF",
+          "blue-border": "#DBEAFE",
 
-        // Secondary: After the Storm / Mid Teal
-        "secondary": "#71A6AD",
-        "secondary-container": "#1d4045",
-        "on-secondary": "#081a1c",
-        "on-secondary-container": "#d6f2f4",
-        "secondary-fixed": "#bce6ea",
-        "secondary-fixed-dim": "#71a6ad",
-        "on-secondary-fixed": "#092225",
-        "on-secondary-fixed-variant": "#224b50",
+          green: "#10B981",
+          "green-light": "#ECFDF5",
+          "green-border": "#D1FAE5",
 
-        // Tertiary: Fresh Sage / Subtle Cyan Balance
-        "tertiary": "#A3E0C8",
-        "tertiary-container": "#184539",
-        "on-tertiary": "#07261d",
-        "on-tertiary-container": "#c9f3e4",
-        "tertiary-fixed": "#b4edda",
-        "tertiary-fixed-dim": "#a3e0c8",
-        "on-tertiary-fixed": "#05221a",
-        "on-tertiary-fixed-variant": "#1c5042",
+          purple: "#8B5CF6",
+          "purple-light": "#F5F3FF",
+          "purple-border": "#EDE9FE",
 
-        // Critical Blocker & Error: Socialist (#941D1D)
-        "error": "#FF8A8A",
-        "error-container": "#941D1D",
-        "on-error": "#FFFFFF",
-        "on-error-container": "#FFDAD6",
-
-        // Typography & Lines
-        "on-surface": "#F0FDFE",
-        "on-surface-variant": "#9FBEC2",
-        "inverse-surface": "#F0FDFE",
-        "inverse-on-surface": "#0B2224",
-        "outline": "#336269",
-        "outline-variant": "rgba(147, 212, 216, 0.16)",
+          amber: "#F59E0B",
+          "amber-light": "#FFFBEB",
+          "amber-border": "#FEF3C7",
+        },
       },
       fontFamily: {
-        display: ['Manrope', 'sans-serif'],
-        headline: ['Manrope', 'sans-serif'],
-        body: ['Inter', 'sans-serif'],
+        display: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        headline: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        body: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
         mono: ['JetBrains Mono', 'Menlo', 'monospace'],
       },
-      width: {
-        '18': '4.5rem',
+      boxShadow: {
+        xs: '0 1px 2px 0 rgba(0, 0, 0, 0.03)',
+        card: '0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03)',
+        'card-hover': '0 4px 12px 0 rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03)',
+        composer: '0 10px 30px -5px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.03)',
       },
-      spacing: {
-        '18': '4.5rem',
-        '22': '5.5rem',
+      borderRadius: {
+        '2xl': '1rem',
+        '3xl': '1.25rem',
       }
     },
   },

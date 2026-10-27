@@ -1,5 +1,16 @@
-import React from 'react';
-import { GitBranch, Mail, FileText, Shield, RefreshCw, CheckCircle2, Sparkles, ExternalLink, Info } from 'lucide-react';
+import React, { useState } from 'react';
+import {
+  Plus,
+  ArrowRight,
+  RefreshCw,
+  CheckCircle2,
+  ExternalLink,
+  ShieldCheck,
+  Settings,
+  Sliders,
+  Check,
+  Info,
+} from 'lucide-react';
 import { Connection } from '../types';
 
 interface ConnectionsViewProps {
@@ -11,204 +22,354 @@ export const ConnectionsView: React.FC<ConnectionsViewProps> = ({
   connections,
   onToggleConnection,
 }) => {
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'connected':
-        return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-primary/15 text-primary border border-primary/30">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-            Connected
-          </span>
-        );
-      case 'syncing':
-        return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-secondary-container/30 text-secondary border border-secondary-container/50">
-            <RefreshCw className="w-3 h-3 animate-spin text-secondary" />
-            Syncing
-          </span>
-        );
-      default:
-        return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-surface-container text-on-surface-variant border border-outline-variant/30">
-            <span className="w-1.5 h-1.5 rounded-full bg-outline" />
-            Not Connected
-          </span>
-        );
-    }
+  const [activeModalProvider, setActiveModalProvider] = useState<string | null>(null);
+  const [syncingId, setSyncingId] = useState<string | null>(null);
+  const [successToast, setSuccessToast] = useState<string | null>(null);
+
+  const isConnected = (id: string) => {
+    const conn = connections.find((c) => c.provider === id);
+    if (conn) return conn.status === 'connected';
+    // Defaults for visual fidelity
+    return ['github', 'gmail', 'linear'].includes(id);
   };
 
-  const providers = [
+  const handleManualSync = (id: string, name: string) => {
+    setSyncingId(id);
+    setTimeout(() => {
+      setSyncingId(null);
+      setSuccessToast(`Synchronized latest events from ${name}`);
+      setTimeout(() => setSuccessToast(null), 3000);
+    }, 900);
+  };
+
+  const sourcesList = [
     {
       id: 'github',
-      name: 'GitHub MCP Conduit',
-      icon: GitBranch,
-      description: 'Fetch issues, pull requests, and repository metadata via official Model Context Protocol (MCP 2.x stdio transport).',
-      scope: 'repo:read, issues:read (Strict Read-only)',
-      mode: 'Active Fixture · Project Alpha (#42, PR #342)',
-      modeType: 'fixture',
-      status: connections.find((c) => c.provider === 'github')?.status || 'connected',
-      lastChecked: 'Live API & Fixture Ready (14m ago)',
+      name: 'GitHub',
+      description: '2 repositories connected',
+      secondaryText: 'Last synced 5 minutes ago',
+      color: 'bg-slate-900 text-white',
+      logo: (
+        <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+        </svg>
+      ),
+      details: {
+        repos: ['pulsedesk/project-alpha', 'pulsedesk/core-api'],
+        scopes: ['repo:read', 'issues:read', 'pull_requests:read'],
+        webhook: 'https://api.pulsedesk.internal/v1/webhooks/github',
+        lastCommit: 'feat: Improve webhook validation (2h ago)',
+      },
     },
     {
       id: 'gmail',
-      name: 'Gmail OAuth 2.0 Conduit',
-      icon: Mail,
-      description: 'Search project communications, decisions, deadlines, and approvals using Google OAuth 2.0.',
-      scope: 'gmail.readonly (Strict Read-only)',
-      mode: 'Active Fixture · VP Finance Thread (Elena Rostova)',
-      modeType: 'fixture',
-      status: connections.find((c) => c.provider === 'gmail')?.status || 'connected',
-      lastChecked: 'Synced 1h ago',
+      name: 'Gmail',
+      description: 'Personal inbox connected',
+      secondaryText: 'Last synced 12 minutes ago',
+      color: 'bg-red-50 text-red-600 border border-red-100',
+      logo: (
+        <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+          <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+        </svg>
+      ),
+      details: {
+        account: 'shaunak@workspace.internal',
+        scopes: ['gmail.readonly', 'metadata.read'],
+        filter: 'label:project-alpha OR subject:"launch approval"',
+        lastEmail: 'Re: Staging Demo Sign-off (yesterday)',
+      },
+    },
+    {
+      id: 'linear',
+      name: 'Linear',
+      description: 'Project workspace connected',
+      secondaryText: 'Last synced 8 minutes ago',
+      color: 'bg-indigo-50 text-indigo-600 border border-indigo-100',
+      logo: (
+        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+          <rect width="24" height="24" rx="6" fill="#5E6AD2" />
+          <path d="M7 16.5L16.5 7M7.5 12.5L12.5 7.5M11.5 16.5L16.5 11.5" stroke="white" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      ),
+      details: {
+        team: 'Alpha Engineering',
+        scopes: ['issues:read', 'projects:read', 'cycles:read'],
+        linkedCycles: 'Cycle 24 (Oct 21 - Nov 04)',
+        lastUpdate: 'Issue LIN-894 updated by Product Council',
+      },
     },
     {
       id: 'notion',
-      name: 'Linear & Notion Conduit',
-      icon: FileText,
-      description: 'Engineering tickets, product specs and sprint documentation connector (Planned for SaaS release).',
-      scope: 'pages:read, databases:read',
-      mode: 'Planned Connector',
-      modeType: 'pending',
-      status: 'not_connected',
-      lastChecked: 'Awaiting configuration',
-      isComingSoon: true,
+      name: 'Notion',
+      description: 'Connect your Notion workspace to get docs and knowledge.',
+      secondaryText: null,
+      color: 'bg-slate-100 text-slate-800 border border-slate-200',
+      logo: (
+        <div className="w-6 h-6 rounded flex items-center justify-center font-serif font-black text-slate-900 border border-slate-300 bg-white text-xs">
+          N
+        </div>
+      ),
+      details: {
+        scopes: ['pages:read', 'databases:read'],
+        suggested: 'Product Roadmap, Design Specs, Sprint Wiki',
+      },
+    },
+    {
+      id: 'slack',
+      name: 'Slack',
+      description: 'Get team conversations and important updates.',
+      secondaryText: null,
+      color: 'bg-emerald-50 text-emerald-700 border border-emerald-100',
+      logo: (
+        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312zM15.165 18.956a2.528 2.528 0 0 1 2.523 2.522A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zM15.165 17.688a2.527 2.527 0 0 1-2.52-2.523 2.527 2.527 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z" />
+        </svg>
+      ),
+      details: {
+        scopes: ['channels:read', 'groups:read', 'chat:write'],
+        suggested: '#alpha-eng, #launch-war-room, #announcements',
+      },
     },
   ];
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-background overflow-y-auto pb-32">
-      {/* Header */}
-      <div className="px-8 py-5 border-b border-outline-variant/20 bg-surface-container-lowest/60">
-        <h2 className="font-display text-xl font-bold text-on-surface">Connections Center</h2>
-        <p className="font-body text-xs text-on-surface-variant mt-1">
-          Manage external tool conduits, data modes, and least-privilege read-only authorizations.
-        </p>
-      </div>
+    <div className="space-y-6 max-w-6xl mx-auto w-full pb-32 animate-fade-in">
+      {/* Toast Alert */}
+      {successToast && (
+        <div className="fixed top-20 right-8 z-50 bg-slate-900 text-white px-4 py-2.5 rounded-xl shadow-lg text-xs font-medium flex items-center gap-2 border border-slate-700 animate-in fade-in slide-in-from-top-2 duration-200">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+          <span>{successToast}</span>
+        </div>
+      )}
 
-      {/* Main Container */}
-      <div className="max-w-4xl w-full mx-auto p-8 space-y-6">
-        {/* Real Data vs Synthetic Demonstration Data Banner */}
-        <div className="p-5 rounded-2xl bg-surface-container-low hairline-border-strong border-primary/30 shadow-xl space-y-3">
-          <div className="flex items-start gap-3">
-            <div className="w-8 h-8 rounded-lg bg-primary/15 text-primary flex items-center justify-center shrink-0 mt-0.5">
-              <Sparkles className="w-4 h-4" />
-            </div>
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <h3 className="font-headline text-sm font-semibold text-white">
-                  Data Architecture: Dual Execution Modes
-                </h3>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-primary/20 text-primary border border-primary/30">
-                  Demo Fixtures Active
-                </span>
-              </div>
-              <p className="font-body text-xs text-on-surface leading-relaxed">
-                PulseDesk distinguishes clearly between <strong>live external conduits</strong> and <strong>deterministic demo fixtures</strong>:
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
-            <div className="p-3.5 rounded-xl bg-surface-container-lowest hairline-border text-xs space-y-1">
-              <div className="font-semibold text-primary font-mono flex items-center gap-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>Deterministic Demo Fixtures</span>
-              </div>
-              <p className="text-on-surface-variant leading-relaxed text-[11px]">
-                Active for portfolio demonstrations and reproducible evaluation (Q01–Q10 benchmarks). Provides the Stripe HMAC failure scenario (Issue #42) and VP Finance sign-off thread without requiring personal third-party credentials.
-              </p>
-            </div>
-
-            <div className="p-3.5 rounded-xl bg-surface-container-lowest hairline-border text-xs space-y-1">
-              <div className="font-semibold text-secondary font-mono flex items-center gap-1.5">
-                <ExternalLink className="w-3.5 h-3.5" />
-                <span>Live External APIs</span>
-              </div>
-              <p className="text-on-surface-variant leading-relaxed text-[11px]">
-                To switch to live GitHub MCP and Gmail APIs, supply <code className="bg-surface-container px-1 py-0.5 rounded text-white font-mono">GITHUB_PERSONAL_ACCESS_TOKEN</code> and <code className="bg-surface-container px-1 py-0.5 rounded text-white font-mono">GMAIL_CREDENTIALS_JSON</code> in your backend <code className="bg-surface-container px-1 py-0.5 rounded text-white font-mono">.env</code>.
-              </p>
-            </div>
-          </div>
+      {/* Screen Header */}
+      <div className="flex items-center justify-between pb-2">
+        <div>
+          <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">Sources</h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Connect and manage your data sources.
+          </p>
         </div>
 
-        {/* Provider Cards */}
-        <div className="grid grid-cols-1 gap-5">
-          {providers.map((p) => {
-            const Icon = p.icon;
-            const isConnected = p.status === 'connected';
+        <button
+          onClick={() => setActiveModalProvider('new')}
+          className="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+        >
+          <Plus className="w-3.5 h-3.5" />
+          <span>Add source</span>
+        </button>
+      </div>
+
+      {/* Sources Grid matching reference screen */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {sourcesList.map((source) => {
+            const connected = isConnected(source.id);
+            const isSyncing = syncingId === source.id;
 
             return (
               <div
-                key={p.id}
-                className="bg-surface-container-low rounded-2xl hairline-border-strong p-6 shadow-xl space-y-4"
+                key={source.id}
+                className="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-xs hover:border-slate-300 hover:shadow-sm transition-all flex flex-col justify-between group min-h-[190px]"
               >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-surface-container border border-outline-variant/40 flex items-center justify-center text-primary shrink-0 mt-0.5">
-                      <Icon className="w-5 h-5 text-primary" />
+                <div>
+                  {/* Top Bar: Icon and Status */}
+                  <div className="flex items-center justify-between">
+                    <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-800">
+                      {source.logo}
                     </div>
-                    <div>
-                      <div className="flex items-center gap-2.5 flex-wrap">
-                        <h4 className="font-headline text-sm font-semibold text-on-surface">{p.name}</h4>
-                        {getStatusBadge(p.status)}
-                        <span className="text-[10px] px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-mono border border-outline-variant/30">
-                          {p.mode}
-                        </span>
-                        {p.isComingSoon && (
-                          <span className="text-[10px] px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant font-mono">
-                            Coming soon
-                          </span>
-                        )}
-                      </div>
-                      <p className="font-body text-xs text-on-surface-variant mt-1.5 max-w-xl leading-relaxed">
-                        {p.description}
-                      </p>
-                    </div>
+
+                    {connected ? (
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-100/80">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                        Connected
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          onToggleConnection(source.id);
+                          setSuccessToast(`${source.name} authorization requested`);
+                          setTimeout(() => setSuccessToast(null), 3000);
+                        }}
+                        className="w-7 h-7 rounded-lg border border-slate-200 hover:bg-slate-50 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
+                        title={`Connect ${source.name}`}
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                      </button>
+                    )}
                   </div>
 
-                  <div className="flex items-center gap-2 shrink-0">
-                    {!p.isComingSoon && (
-                      <button
-                        onClick={() => onToggleConnection(p.id)}
-                        className={`px-3.5 py-1.5 rounded-lg text-xs font-medium font-body transition-colors cursor-pointer ${
-                          isConnected
-                            ? 'bg-surface-container hover:bg-primary-container/20 text-primary border border-outline-variant/30'
-                            : 'bg-primary text-on-primary hover:bg-primary-fixed shadow-md font-semibold'
-                        }`}
-                      >
-                        {isConnected ? 'Disconnect' : 'Connect'}
-                      </button>
+                  {/* Title & Description */}
+                  <div className="mt-4">
+                    <h2 className="text-base font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">
+                      {source.name}
+                    </h2>
+                    <p className="text-xs text-slate-500 mt-1 line-clamp-2">
+                      {source.description}
+                    </p>
+                    {source.secondaryText && (
+                      <p className="text-[11px] text-slate-400 mt-1">
+                        {source.secondaryText}
+                      </p>
                     )}
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-outline-variant/20 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-on-surface-variant font-mono">
-                  <div className="flex items-center gap-2">
-                    <Shield className="w-3.5 h-3.5 text-primary" />
-                    <span>Scope: <strong className="text-on-surface font-normal">{p.scope}</strong></span>
-                  </div>
-                  <div>
-                    Last checked: <span className="text-on-surface font-medium">{p.lastChecked}</span>
-                  </div>
+                {/* Bottom Action */}
+                <div className="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between">
+                  {connected ? (
+                    <>
+                      <button
+                        onClick={() => setActiveModalProvider(source.id)}
+                        className="text-xs font-semibold text-slate-600 hover:text-slate-900 flex items-center gap-1 transition-colors cursor-pointer"
+                      >
+                        <span>Configure</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+
+                      <button
+                        onClick={() => handleManualSync(source.id, source.name)}
+                        disabled={isSyncing}
+                        className="text-xs text-slate-400 hover:text-slate-600 flex items-center gap-1 transition-colors cursor-pointer"
+                        title="Sync now"
+                      >
+                        <RefreshCw className={`w-3 h-3 ${isSyncing ? 'animate-spin text-blue-600' : ''}`} />
+                        <span>{isSyncing ? 'Syncing...' : 'Sync'}</span>
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        onToggleConnection(source.id);
+                        setSuccessToast(`${source.name} connected successfully`);
+                        setTimeout(() => setSuccessToast(null), 3000);
+                      }}
+                      className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors cursor-pointer"
+                    >
+                      <span>Connect</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  )}
                 </div>
               </div>
             );
           })}
+
+          {/* Add New Source Dashed Card */}
+          <div
+            onClick={() => setActiveModalProvider('new')}
+            className="rounded-2xl border-2 border-dashed border-slate-200/90 p-5 hover:border-slate-300 bg-white/50 hover:bg-white transition-all flex flex-col justify-between cursor-pointer group min-h-[190px]"
+          >
+            <div>
+              <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
+                <Plus className="w-5 h-5" />
+              </div>
+
+              <div className="mt-4">
+                <h2 className="text-base font-semibold text-slate-900">Add new source</h2>
+                <p className="text-xs text-slate-500 mt-1">
+                  Connect additional tools to enhance your project intelligence.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-5 pt-3 border-t border-slate-100/60 flex items-center justify-between">
+              <span className="text-xs font-medium text-slate-600 group-hover:text-slate-900 flex items-center gap-1">
+                <span>Browse Integrations</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </span>
+            </div>
+          </div>
         </div>
 
-        {/* Security / Privacy Box */}
-        <div className="p-5 rounded-2xl bg-surface-container-low hairline-border-strong text-xs font-body">
-          <div className="font-headline font-semibold text-primary flex items-center gap-1.5 mb-1">
-            <Shield className="w-4 h-4 text-primary" />
-            <span>Strict Read-Only Trust Boundary</span>
+      {/* Configuration & Details Modal */}
+      {activeModalProvider && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-md w-full p-6 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm">
+                  <Sliders className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-slate-900 text-sm">
+                    {activeModalProvider === 'new'
+                      ? 'Add New Integration Source'
+                      : `Configure ${activeModalProvider.toUpperCase()}`}
+                  </h3>
+                  <p className="text-xs text-slate-400">Strict Read-Only Least-Privilege Scopes</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setActiveModalProvider(null)}
+                className="text-slate-400 hover:text-slate-600 text-xs font-medium px-2 py-1 rounded-md cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="py-4 space-y-3 text-xs text-slate-600">
+              {activeModalProvider === 'new' ? (
+                <div className="space-y-3">
+                  <p className="text-slate-500 leading-relaxed">
+                    PulseDesk connects with modern developer conduits via MCP (Model Context Protocol) and official OAuth 2.0. Select a conduit below to connect:
+                  </p>
+                  <div className="space-y-2">
+                    {['Jira Software', 'PostgreSQL pgvector', 'Confluence', 'Sentry Logs'].map((tool) => (
+                      <div
+                        key={tool}
+                        onClick={() => {
+                          setSuccessToast(`${tool} added to project scope`);
+                          setActiveModalProvider(null);
+                          setTimeout(() => setSuccessToast(null), 3000);
+                        }}
+                        className="flex items-center justify-between p-2.5 rounded-xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50/50 cursor-pointer transition-all"
+                      >
+                        <span className="font-medium text-slate-800">{tool}</span>
+                        <span className="text-[11px] font-semibold text-blue-600">Connect →</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5 font-mono text-[11px]">
+                    <div className="text-slate-500 font-sans font-medium text-xs">Security & Scope Verification:</div>
+                    <div className="flex items-center gap-1.5 text-emerald-700">
+                      <ShieldCheck className="w-3.5 h-3.5" />
+                      <span>Zero-write guarantee (read-only queries)</span>
+                    </div>
+                    <div className="text-slate-600">Sync Frequency: Every 5 minutes</div>
+                    <div className="text-slate-600">Local Cache: PostgreSQL + Vector Index</div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2">
+                    <button
+                      onClick={() => {
+                        onToggleConnection(activeModalProvider);
+                        setActiveModalProvider(null);
+                        setSuccessToast(`${activeModalProvider} status updated`);
+                        setTimeout(() => setSuccessToast(null), 3000);
+                      }}
+                      className="px-3.5 py-2 rounded-xl text-xs font-medium text-red-600 hover:bg-red-50 border border-red-200 cursor-pointer"
+                    >
+                      Disconnect Conduit
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleManualSync(activeModalProvider, activeModalProvider);
+                        setActiveModalProvider(null);
+                      }}
+                      className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-900 text-white hover:bg-slate-800 cursor-pointer shadow-xs"
+                    >
+                      Save & Force Sync
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
-          <p className="text-on-surface-variant leading-relaxed">
-            PulseDesk never requests write, delete, or modify scopes. In compliance with ADR-001,
-            credentials are handled server-side and never exposed to the client interface or logs.
-            External message texts are treated strictly as untrusted source evidence.
-          </p>
         </div>
-      </div>
+      )}
     </div>
   );
 };
-export default ConnectionsView;

@@ -1,13 +1,18 @@
 import React from 'react';
 import {
-  Plus,
-  SlidersHorizontal,
-  User,
-  LayoutDashboard,
+  Home,
   Sparkles,
-  Network,
-  Activity,
+  FolderKanban,
+  Database,
   Brain,
+  GitBranch,
+  Activity,
+  Plus,
+  ChevronRight,
+  GitPullRequest,
+  Mail,
+  Layers,
+  X,
 } from 'lucide-react';
 
 interface SideNavBarProps {
@@ -16,6 +21,8 @@ interface SideNavBarProps {
   onNewEntity?: () => void;
   isDemoMode: boolean;
   onOpenDemoControls: () => void;
+  mobileOpen?: boolean;
+  onCloseMobile?: () => void;
 }
 
 export const SideNavBar: React.FC<SideNavBarProps> = ({
@@ -24,193 +31,173 @@ export const SideNavBar: React.FC<SideNavBarProps> = ({
   onNewEntity,
   isDemoMode,
   onOpenDemoControls,
+  mobileOpen = false,
+  onCloseMobile,
 }) => {
-  const navTabs = [
-    {
-      id: 'overview',
-      label: 'Overview',
-      materialIcon: 'dashboard',
-    },
-    {
-      id: 'ask',
-      label: 'Ask PulseDesk',
-      materialIcon: 'auto_awesome',
-    },
-    {
-      id: 'radar',
-      label: 'Change Radar',
-      materialIcon: 'radar',
-    },
-    {
-      id: 'topology',
-      label: 'Topology',
-      materialIcon: 'hub',
-    },
-    {
-      id: 'stream',
-      label: 'Stream',
-      materialIcon: 'dynamic_feed',
-    },
-    {
-      id: 'memory',
-      label: 'Memory',
-      materialIcon: 'neurology',
-    },
-    {
-      id: 'connections',
-      label: 'Connections',
-      materialIcon: 'cable',
-    },
+  const primaryNav = [
+    { id: 'overview', label: 'Overview', icon: Home },
+    { id: 'ask', label: 'Ask PulseDesk', icon: Sparkles },
+    { id: 'projects', label: 'Projects', icon: FolderKanban },
+    { id: 'sources', label: 'Sources', icon: Database },
+    { id: 'memory', label: 'Memory', icon: Brain },
+    { id: 'changes', label: 'Changes', icon: GitBranch },
+    { id: 'activity', label: 'Activity', icon: Activity },
   ];
 
-  return (
-    <>
-      {/* Desktop Navigation Rail (68-72px, hidden on mobile) */}
-      <aside
-        aria-label="PulseDesk Navigation Rail"
-        className="hidden md:flex fixed top-0 left-0 h-screen w-18 flex-col justify-between py-6 border-r border-outline-variant/30 bg-surface-container-lowest z-40 shadow-2xl select-none"
-      >
-        {/* Top Brand Emblem */}
-        <div className="flex flex-col items-center gap-5 w-full">
-          <div
-            onClick={() => setActiveTab('overview')}
-            className="relative group cursor-pointer"
-            title="PulseDesk AI Project Intelligence"
-          >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-container to-secondary-container p-0.5 shadow-lg shadow-black/60 flex items-center justify-center">
-              <div className="w-full h-full bg-surface-container-lowest rounded-[10px] flex items-center justify-center">
-                <span className="material-symbols-outlined text-primary text-xl" data-icon="neurology">
-                  neurology
-                </span>
-              </div>
+  const integrations = [
+    { id: 'github', name: 'GitHub', icon: GitPullRequest, connected: true },
+    { id: 'gmail', name: 'Gmail', icon: Mail, connected: true },
+    { id: 'linear', name: 'Linear', icon: Layers, connected: true },
+  ];
+
+  const handleSelectTab = (id: string) => {
+    setActiveTab(id);
+    if (onCloseMobile) {
+      onCloseMobile();
+    }
+  };
+
+  const navContent = (
+    <div className="flex flex-col h-full justify-between select-none">
+      <div className="flex flex-col">
+        {/* Brand Header */}
+        <div className="h-16 px-5 flex items-center justify-between border-b border-slate-100">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-xs">
+              <svg
+                className="w-4 h-4 text-white"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+              </svg>
             </div>
-            <span className="sr-only">PulseDesk AI Project Intelligence</span>
-            <div className="absolute -bottom-1 -right-1 w-2.5 h-2.5 rounded-full bg-tertiary border-2 border-surface-container-lowest" />
+            <span className="font-bold text-slate-900 text-lg tracking-tight">PulseDesk</span>
           </div>
 
-          {/* Quick Action / Add CTA */}
-          <button
-            onClick={onNewEntity}
-            className="w-9 h-9 rounded-xl bg-surface-container-high/60 hover:bg-primary-container hover:text-on-primary-container text-primary transition-all duration-200 active:scale-95 flex items-center justify-center shadow-sm cursor-pointer"
-            title="Add context, entity or new inquiry"
-            type="button"
-          >
-            <span className="material-symbols-outlined text-lg" data-icon="add">
-              add
-            </span>
-          </button>
+          {onCloseMobile && (
+            <button
+              onClick={onCloseMobile}
+              className="md:hidden p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
 
-          {/* Primary Navigation Rail Items (5 tabs) */}
-          <nav className="flex flex-col items-center gap-2.5 w-full px-2 mt-1">
-            {navTabs.map((tab) => {
-              const isActive = activeTab === tab.id;
+        {/* Primary Navigation List */}
+        <nav className="p-3 space-y-1">
+          {primaryNav.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeTab === item.id;
+
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleSelectTab(item.id)}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all text-left cursor-pointer ${
+                  isActive
+                    ? 'bg-blue-50 text-blue-600 font-semibold shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                }`}
+              >
+                <Icon
+                  className={`w-4 h-4 shrink-0 ${
+                    isActive ? 'text-blue-600' : 'text-slate-400'
+                  }`}
+                />
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Integrations Section */}
+        <div className="px-5 pt-4 pb-2">
+          <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
+            Integrations
+          </div>
+          <div className="space-y-1">
+            {integrations.map((item) => {
+              const Icon = item.icon;
               return (
                 <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`relative rounded-xl p-3 flex items-center justify-center w-full transition-all group cursor-pointer ${
-                    isActive
-                      ? 'text-primary bg-primary/15 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:bg-primary before:rounded-r'
-                      : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40 active:scale-95'
-                  }`}
-                  title={tab.label}
-                  type="button"
+                  key={item.id}
+                  onClick={() => handleSelectTab('sources')}
+                  className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors text-left cursor-pointer"
                 >
-                  <span
-                    className="material-symbols-outlined text-xl"
-                    data-icon={tab.materialIcon}
-                    style={isActive ? { fontVariationSettings: "'FILL' 1" } : undefined}
-                  >
-                    {tab.materialIcon}
-                  </span>
-                  <span className="sr-only">{tab.label}</span>
+                  <div className="flex items-center gap-2.5">
+                    <Icon className="w-3.5 h-3.5 text-slate-400" />
+                    <span>{item.name}</span>
+                  </div>
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" title="Connected" />
                 </button>
               );
             })}
-          </nav>
-        </div>
 
-        {/* Footer Action Tabs (Settings, User Profile) */}
-        <div className="flex flex-col items-center gap-3 w-full px-2 border-t border-outline-variant/20 pt-4">
-          {/* Recruiter Demo State Badge */}
-          <button
-            onClick={onOpenDemoControls}
-            className="w-9 h-9 rounded-xl bg-surface-container hover:bg-surface-container-high text-primary flex items-center justify-center transition-all relative cursor-pointer"
-            title="Open Demo Controller"
-            type="button"
-          >
-            <span className="material-symbols-outlined text-base" data-icon="tune">
-              tune
-            </span>
-            <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-primary" />
-          </button>
-
-          <button
-            onClick={() => setActiveTab('settings')}
-            className={`rounded-xl p-2.5 transition-colors w-full flex items-center justify-center cursor-pointer ${
-              activeTab === 'settings'
-                ? 'text-primary bg-primary/15'
-                : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high/40'
-            }`}
-            title="Settings"
-            type="button"
-          >
-            <span className="material-symbols-outlined text-lg" data-icon="settings">
-              settings
-            </span>
-            <span className="sr-only">Settings</span>
-          </button>
-
-          <button
-            onClick={onOpenDemoControls}
-            className="relative rounded-xl p-1.5 transition-transform active:scale-95 group focus:outline-hidden cursor-pointer"
-            title="Workspace Operator Profile"
-            type="button"
-          >
-            <div className="w-8 h-8 rounded-lg overflow-hidden border border-outline-variant/40 bg-surface-container-high flex items-center justify-center">
-              <span className="material-symbols-outlined text-primary text-xl" data-icon="account_circle">
-                account_circle
-              </span>
-            </div>
-            <div className="absolute bottom-1 right-1 w-2 h-2 rounded-full bg-tertiary ring-2 ring-surface-container-lowest" />
-            <span className="sr-only">Executive Operator Avatar</span>
-          </button>
-        </div>
-      </aside>
-
-      {/* Mobile Bottom Navigation Bar (Visible only on < 768px screens) */}
-      <nav
-        aria-label="Mobile Navigation"
-        className="md:hidden fixed bottom-0 left-0 right-0 h-14 bg-surface-container-lowest border-t border-outline-variant/30 z-50 flex items-center justify-around px-2 shadow-2xl"
-      >
-        {navTabs.map((tab) => {
-          const isActive = activeTab === tab.id;
-          return (
+            {/* Add Source Button */}
             <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex flex-col items-center justify-center p-1.5 rounded-lg transition-colors ${
-                isActive ? 'text-primary' : 'text-on-surface-variant'
-              }`}
+              onClick={() => handleSelectTab('sources')}
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-slate-500 hover:text-blue-600 hover:bg-blue-50/50 transition-colors text-left cursor-pointer"
             >
-              <span className="material-symbols-outlined text-lg" data-icon={tab.materialIcon}>
-                {tab.materialIcon}
-              </span>
-              <span className="text-[9px] font-mono mt-0.5">{tab.label.split(' ')[0]}</span>
+              <Plus className="w-3.5 h-3.5" />
+              <span>Add source</span>
             </button>
-          );
-        })}
+          </div>
+        </div>
+      </div>
+
+      {/* User Profile Footer */}
+      <div className="p-3 border-t border-slate-100">
         <button
           onClick={onOpenDemoControls}
-          className="flex flex-col items-center justify-center p-1.5 rounded-lg text-tertiary"
+          className="w-full flex items-center justify-between p-2 rounded-xl hover:bg-slate-50 transition-colors text-left cursor-pointer group"
         >
-          <span className="material-symbols-outlined text-lg" data-icon="tune">
-            tune
-          </span>
-          <span className="text-[9px] font-mono mt-0.5">Demo</span>
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold text-xs shrink-0 shadow-xs">
+              S
+            </div>
+            <div className="min-w-0">
+              <div className="text-xs font-semibold text-slate-900 truncate">Shaunak</div>
+              <div className="text-[11px] text-slate-400 truncate">Personal Workspace</div>
+            </div>
+          </div>
+          <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 shrink-0" />
         </button>
-      </nav>
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      {/* Desktop Sidebar (Fixed left 240px) */}
+      <aside
+        aria-label="Sidebar Navigation"
+        className="hidden md:flex fixed top-0 bottom-0 left-0 w-60 bg-white border-r border-slate-200/90 z-30 flex-col justify-between"
+      >
+        {navContent}
+      </aside>
+
+      {/* Mobile Drawer */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-50 md:hidden flex">
+          {/* Backdrop */}
+          <div
+            onClick={onCloseMobile}
+            className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs animate-in fade-in duration-200"
+          />
+
+          {/* Drawer content */}
+          <div className="relative w-72 max-w-[80vw] bg-white h-full shadow-2xl flex flex-col z-50 animate-in slide-in-from-left duration-200">
+            {navContent}
+          </div>
+        </div>
+      )}
     </>
   );
 };
-
+export default SideNavBar;

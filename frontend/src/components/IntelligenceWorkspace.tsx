@@ -1,14 +1,20 @@
 import React, { useState } from 'react';
 import {
-  Send,
-  CheckCircle2,
   Sparkles,
-  RefreshCw,
+  Paperclip,
+  Globe,
+  Folder,
+  ArrowUp,
+  Loader2,
+  GitPullRequest,
+  Mail,
+  Layers,
+  ChevronRight,
   ExternalLink,
-  Database,
-  ArrowRight,
-  ShieldCheck,
-  Terminal,
+  FileCode,
+  FileText,
+  AlertCircle,
+  CheckCircle2,
 } from 'lucide-react';
 import { Message, Citation, EvidenceItem } from '../types';
 
@@ -27,11 +33,10 @@ export const IntelligenceWorkspace: React.FC<IntelligenceWorkspaceProps> = ({
   isLoading,
   onSendMessage,
   onSelectEvidence,
-  onToggleDemoState,
-  isDemoMode,
-  issue42State,
 }) => {
   const [inputText, setInputText] = useState('');
+  const [webEnabled, setWebEnabled] = useState(false);
+  const [projectEnabled, setProjectEnabled] = useState(true);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,204 +46,239 @@ export const IntelligenceWorkspace: React.FC<IntelligenceWorkspaceProps> = ({
   };
 
   const samplePrompts = [
-    'What is blocking Alpha launch and what changed since yesterday?',
-    'What should I focus on this week based on my priorities?',
-    'Remember that Project Alpha demo presentation is top priority.',
+    'Summarize recent changes',
+    'Why is the Stripe integration failing in staging?',
+    'What should I focus on today?',
+    'Show me open high priority issues',
+  ];
+
+  const followUpActions = [
+    'Show me the code diff',
+    'What files are affected?',
+    'Summarize the logs',
+    'Create a test plan',
   ];
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-background overflow-y-auto pb-32">
-      {/* Top Header Bar */}
-      <div className="sticky top-0 z-10 px-8 py-3.5 bg-surface/90 backdrop-blur-md border-b border-outline-variant/20 flex items-center justify-between">
-        <div className="flex items-center gap-2 text-xs text-on-surface-variant">
-          <span className="font-semibold uppercase tracking-wider text-[11px] text-outline font-mono">Workspace</span>
-          <span className="text-outline-variant">/</span>
-          <span className="font-medium text-on-surface">Project Alpha Assistant</span>
-        </div>
-
-        <div className="text-[11px] font-mono text-outline-variant">
-          LangGraph Multi-Agent RAG · Verified Sources
-        </div>
-      </div>
-
-      {/* Main Workspace Content */}
-      <div className="max-w-4xl w-full mx-auto px-8 py-8 flex-1 flex flex-col">
-        {/* Header Hero */}
-        <div className="mb-8">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-surface-container-high text-primary text-[11px] font-semibold tracking-wide mb-2.5 font-mono border border-outline-variant/30">
-            <Sparkles className="w-3 h-3 text-primary" />
-            Project Assistant
-          </div>
-          <h1 className="font-display text-3xl md:text-4xl font-semibold tracking-tight text-white leading-tight">
-            Conversational Intelligence
+    <div className="flex-1 flex flex-col h-full bg-slate-50/50 overflow-hidden relative">
+      {/* Top Header */}
+      <div className="px-6 py-4 bg-white border-b border-slate-200/90 flex items-center justify-between shrink-0">
+        <div>
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            Ask PulseDesk
           </h1>
-          <p className="font-body text-sm text-on-surface-variant/90 mt-1 font-light">
-            Answers grounded in real GitHub commits, Gmail approvals, and durable memory.
+          <p className="text-xs text-slate-500 mt-0.5">
+            Get intelligent answers from your project data across GitHub, Gmail, Linear and more.
           </p>
         </div>
 
-        {/* Conversation Stream */}
+        {/* Connected Sources Indicator */}
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200">
+          <div className="flex -space-x-1">
+            <div className="w-5 h-5 rounded-full bg-slate-800 text-white flex items-center justify-center ring-2 ring-white">
+              <GitPullRequest className="w-3 h-3" />
+            </div>
+            <div className="w-5 h-5 rounded-full bg-red-500 text-white flex items-center justify-center ring-2 ring-white">
+              <Mail className="w-3 h-3" />
+            </div>
+            <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center ring-2 ring-white">
+              <Layers className="w-3 h-3" />
+            </div>
+          </div>
+          <span className="text-xs font-medium text-slate-600">3 connected</span>
+          <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+        </div>
+      </div>
+
+      {/* Suggested Prompt Chips (Visible above chat) */}
+      <div className="px-6 py-3 bg-white/70 border-b border-slate-200/60 flex items-center gap-2 overflow-x-auto custom-scroll shrink-0">
+        {samplePrompts.map((prompt, idx) => (
+          <button
+            key={idx}
+            onClick={() => onSendMessage(prompt)}
+            className="px-3 py-1.5 rounded-xl bg-slate-100/80 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 border border-slate-200/60 text-xs font-medium text-slate-600 transition-colors whitespace-nowrap cursor-pointer shrink-0"
+          >
+            {prompt}
+          </button>
+        ))}
+      </div>
+
+      {/* Conversation Thread Area */}
+      <div className="flex-1 overflow-y-auto custom-scroll p-6 space-y-6 pb-32">
         {messages.length === 0 ? (
-          <div className="flex-1 flex flex-col justify-center my-6">
-            <div className="bg-surface-container-low rounded-2xl p-6 hairline-border shadow-xl">
-              <h3 className="font-headline text-sm font-semibold text-on-surface mb-1">
-                Explore Project Intelligence
-              </h3>
-              <p className="font-body text-xs text-on-surface-variant mb-4">
-                PulseDesk connects with GitHub issues, Gmail threads, and durable project memory to produce
-                source-grounded evidence. Try an example question:
+          <div className="max-w-xl mx-auto my-12 text-center space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 text-blue-600 flex items-center justify-center mx-auto shadow-xs">
+              <Sparkles className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-slate-900">Your Intelligent Workspace Assistant</h3>
+              <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto leading-relaxed">
+                Ask about release blockers, code commits, Gmail decisions, or project priorities. Every claim is strictly grounded in connected evidence.
               </p>
-              <div className="space-y-2">
-                {samplePrompts.map((prompt, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => onSendMessage(prompt)}
-                    className="w-full text-left p-3.5 rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline-variant/30 text-xs text-on-surface transition-all flex items-center justify-between group cursor-pointer"
-                  >
-                    <span>{prompt}</span>
-                    <ArrowRight className="w-3.5 h-3.5 text-on-surface-variant group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
-                  </button>
-                ))}
-              </div>
+            </div>
+            <div className="pt-2 flex flex-col gap-2 max-w-md mx-auto">
+              {samplePrompts.slice(0, 3).map((prompt, i) => (
+                <button
+                  key={i}
+                  onClick={() => onSendMessage(prompt)}
+                  className="p-3 rounded-xl bg-white border border-slate-200 hover:border-blue-300 hover:bg-blue-50/40 text-xs text-slate-700 font-medium transition-all text-left flex items-center justify-between cursor-pointer group shadow-xs"
+                >
+                  <span>{prompt}</span>
+                  <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-transform" />
+                </button>
+              ))}
             </div>
           </div>
         ) : (
-          <div className="space-y-6 flex-1 mb-6">
-            {messages.map((msg) => {
-              if (msg.role === 'user') {
-                return (
-                  <div key={msg.id} className="flex justify-end">
-                    <div className="max-w-xl bg-surface-container border border-outline-variant/30 rounded-2xl px-5 py-3.5 text-xs text-on-surface shadow-md">
-                      {msg.content}
-                    </div>
-                  </div>
-                );
-              }
-
-              // Assistant message card
-              const citations = msg.metadata?.citations || [];
-              const isBlockerOpen = msg.content.includes('Release at risk');
-              const isBlockerClosed = msg.content.includes('blocker resolved');
-
+          messages.map((msg) => {
+            if (msg.role === 'user') {
               return (
-                <div key={msg.id} className="bg-surface-container-low rounded-2xl hairline-border-strong shadow-xl overflow-hidden">
-                  {/* Status Banner */}
-                  {isBlockerOpen && (
-                    <div className="px-6 py-4 bg-primary-container/20 border-b border-primary-container/40 flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-md bg-primary-container text-white flex items-center justify-center shrink-0 mt-0.5 font-bold text-xs">
-                        !
-                      </div>
-                      <div>
-                        <h4 className="font-headline text-sm font-semibold text-on-surface">Release at risk</h4>
-                        <p className="font-body text-xs text-on-surface-variant mt-0.5">
-                          Two dependencies need attention before the staging demo.
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {isBlockerClosed && (
-                    <div className="px-6 py-4 bg-tertiary-container/20 border-b border-tertiary-container/40 flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-md bg-tertiary text-surface flex items-center justify-center shrink-0 mt-0.5">
-                        <CheckCircle2 className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <h4 className="font-headline text-sm font-semibold text-on-surface">Release blocker resolved</h4>
-                        <p className="font-body text-xs text-on-surface-variant mt-0.5">
-                          Issue #42 is verified closed. Ready for staging sign-off.
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Body Content */}
-                  <div className="p-6">
-                    <div className="font-body text-xs leading-relaxed space-y-3 text-on-surface">
-                      {msg.content
-                        .split('\n\n')
-                        .filter((block) => !block.startsWith('### Release at risk') && !block.startsWith('### Release blocker resolved'))
-                        .map((block, idx) => (
-                          <div key={idx} className="whitespace-pre-wrap">
-                            {block}
-                          </div>
-                        ))}
-                    </div>
-
-                    {/* Grounded Citation Chips */}
-                    {citations.length > 0 && (
-                      <div className="mt-6 pt-4 border-t border-outline-variant/30 flex flex-wrap items-center gap-2">
-                        <span className="text-[11px] font-medium text-on-surface-variant mr-1 font-mono">Sources</span>
-                        {citations.map((c, i) => (
-                          <button
-                            key={i}
-                            onClick={() => onSelectEvidence(c.evidence_id)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-medium bg-primary-container/25 text-primary hover:bg-primary-container hover:text-white border border-primary-container/40 transition-all shadow-xs cursor-pointer group"
-                            title={`Inspect verified evidence: ${c.label}`}
-                          >
-                            <span className="w-1.5 h-1.5 rounded-full bg-primary group-hover:bg-white" />
-                            <span>{c.label}</span>
-                            {c.url && <ExternalLink className="w-3 h-3 opacity-70 group-hover:opacity-100" />}
-                          </button>
-                        ))}
-                      </div>
-                    )}
+                <div key={msg.id} className="flex justify-end items-end gap-2.5 max-w-3xl ml-auto">
+                  <div className="bg-blue-50 border border-blue-100 text-slate-900 rounded-2xl rounded-br-xs px-4 py-3 text-xs leading-relaxed shadow-xs">
+                    {msg.content}
                   </div>
-
-                  {/* Card Footer Metadata */}
-                  <div className="px-6 py-2.5 bg-surface-container-lowest border-t border-outline-variant/20 flex items-center justify-between text-[11px] text-on-surface-variant font-mono">
-                    <div className="flex items-center gap-2">
-                      <Database className="w-3 h-3 text-primary" />
-                      <span>Source checks completed · {citations.length} findings · Grounded verification</span>
-                    </div>
-                    <span>Inspectable execution</span>
+                  <div className="w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center text-xs font-semibold shrink-0">
+                    S
                   </div>
                 </div>
               );
-            })}
+            }
 
-            {isLoading && (
-              <div className="bg-surface-container-low rounded-2xl hairline-border p-6 shadow-md flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-                <div className="text-xs text-on-surface-variant font-mono">
-                  PulseDesk is querying GitHub MCP, Gmail threads, and durable project memories...
+            const citations = msg.metadata?.citations || [];
+
+            return (
+              <div key={msg.id} className="max-w-3xl mr-auto space-y-3">
+                <div className="bg-white rounded-2xl border border-slate-200/90 shadow-card p-6 space-y-4">
+                  {/* Assistant Header */}
+                  <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100">
+                    <div className="w-6 h-6 rounded-lg bg-blue-600 flex items-center justify-center text-white text-xs">
+                      <Sparkles className="w-3.5 h-3.5" />
+                    </div>
+                    <span className="text-xs font-bold text-slate-900">PulseDesk</span>
+                    <span className="text-[11px] text-slate-400">Just now</span>
+                  </div>
+
+                  {/* Body Content */}
+                  <div className="text-xs text-slate-700 leading-relaxed space-y-2.5">
+                    {msg.content.split('\n\n').map((paragraph, pIdx) => (
+                      <p key={pIdx} className="whitespace-pre-wrap">
+                        {paragraph}
+                      </p>
+                    ))}
+                  </div>
+
+                  {/* Grounded Citation Chips */}
+                  {citations.length > 0 && (
+                    <div className="pt-3 border-t border-slate-100 flex items-center gap-2 flex-wrap">
+                      <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                        Sources:
+                      </span>
+                      {citations.map((c, cIdx) => (
+                        <button
+                          key={cIdx}
+                          onClick={() => onSelectEvidence(c.evidence_id)}
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 text-slate-700 hover:text-blue-600 text-[11px] font-medium transition-colors cursor-pointer"
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+                          <span>{cIdx + 1} {c.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Follow-up Action Chips */}
+                  <div className="pt-2 flex items-center gap-2 flex-wrap">
+                    {followUpActions.map((action, aIdx) => (
+                      <button
+                        key={aIdx}
+                        onClick={() => onSendMessage(action)}
+                        className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-blue-50 hover:text-blue-600 border border-slate-200/80 text-[11px] font-medium text-slate-600 transition-colors cursor-pointer"
+                      >
+                        {action}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
-            )}
-          </div>
+            );
+          })
         )}
 
-        {/* Input Form at bottom */}
-        <div className="mt-auto">
-          <form
-            onSubmit={handleSubmit}
-            className="bg-surface-container-low border border-outline-variant/40 rounded-xl shadow-xl p-2.5 flex flex-col focus-within:border-primary transition-colors"
-          >
-            <div className="flex items-center gap-2 px-2">
-              <input
-                type="text"
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                placeholder="Ask a follow-up about your work, blockers or dependencies..."
-                disabled={isLoading}
-                className="w-full text-xs text-on-surface placeholder:text-on-surface-variant/40 bg-transparent outline-hidden py-2"
-              />
-              <button
-                type="submit"
-                disabled={!inputText.trim() || isLoading}
-                className="px-4 py-2 rounded-lg bg-primary hover:bg-primary-fixed disabled:opacity-50 text-on-primary font-semibold text-xs transition-colors shrink-0 flex items-center gap-1.5 shadow-md cursor-pointer"
-              >
-                <span>Send</span>
-                <Send className="w-3 h-3" />
-              </button>
-            </div>
+        {isLoading && (
+          <div className="max-w-xl mr-auto bg-white rounded-2xl border border-slate-200 p-4 shadow-card flex items-center gap-3">
+            <Loader2 className="w-4 h-4 animate-spin text-blue-600 shrink-0" />
+            <span className="text-xs text-slate-600 font-medium">
+              PulseDesk is querying GitHub MCP, Gmail threads, and durable project memories...
+            </span>
+          </div>
+        )}
+      </div>
 
-            <div className="flex items-center justify-between px-2 pt-1.5 border-t border-outline-variant/20 text-[10px] text-on-surface-variant font-mono">
-              <span>GitHub MCP · Gmail OAuth · PostgreSQL Memory</span>
-              <span>Evidence validated before display</span>
-            </div>
-          </form>
-        </div>
+      {/* Bottom Composer */}
+      <div className="absolute bottom-4 left-6 right-6 max-w-3xl mx-auto z-20">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white rounded-2xl border border-slate-200/90 shadow-composer p-2 sm:p-2.5 flex items-center gap-2"
+        >
+          <button
+            type="button"
+            className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer shrink-0"
+            title="Attach file"
+          >
+            <Paperclip className="w-4 h-4" />
+          </button>
+
+          <input
+            type="text"
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            disabled={isLoading}
+            placeholder="Ask a follow-up question..."
+            className="flex-1 bg-transparent border-0 focus:ring-0 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-hidden px-1"
+          />
+
+          <div className="flex items-center gap-1.5 shrink-0">
+            <button
+              type="button"
+              onClick={() => setWebEnabled(!webEnabled)}
+              className={`hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors cursor-pointer ${
+                webEnabled
+                  ? 'bg-blue-50 border-blue-200 text-blue-600'
+                  : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+              }`}
+            >
+              <Globe className="w-3.5 h-3.5 text-slate-500" />
+              <span>Web</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setProjectEnabled(!projectEnabled)}
+              className={`hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors cursor-pointer ${
+                projectEnabled
+                  ? 'bg-blue-50 border-blue-200 text-blue-600'
+                  : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+              }`}
+            >
+              <Folder className="w-3.5 h-3.5 text-slate-500" />
+              <span>Project</span>
+            </button>
+
+            <button
+              type="submit"
+              disabled={!inputText.trim() || isLoading}
+              className="w-8 h-8 rounded-xl bg-slate-900 hover:bg-slate-800 disabled:opacity-40 text-white flex items-center justify-center transition-all shadow-xs cursor-pointer"
+            >
+              {isLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin text-white" />
+              ) : (
+                <ArrowUp className="w-4 h-4 text-white" />
+              )}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
 };
+export default IntelligenceWorkspace;

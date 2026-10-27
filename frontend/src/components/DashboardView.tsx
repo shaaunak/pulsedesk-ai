@@ -1,16 +1,25 @@
-import React, { useState } from 'react';
-import { EvidenceItem } from '../types';
+import React from 'react';
 import {
-  FileText,
-  Radar,
-  ArrowRight,
-  Layers,
   AlertTriangle,
-  CheckCircle2,
-  Clock,
-  ExternalLink,
-  ShieldCheck,
+  FileText,
+  GitBranch,
+  Target,
+  ArrowRight,
   GitPullRequest,
+  Mail,
+  Layers,
+  Plus,
+  MessageSquare,
+  CheckCircle2,
+  Play,
+  TrendingUp,
+  TrendingDown,
+  Sparkles,
+  Paperclip,
+  Globe,
+  Folder,
+  Send,
+  ExternalLink,
 } from 'lucide-react';
 
 interface DashboardViewProps {
@@ -20,722 +29,528 @@ interface DashboardViewProps {
   onDeployIntelligence: () => void;
   onInspectEvidence: (evidenceId: string) => void;
   onOpenExportBriefing?: () => void;
-  onNavigateToRadar?: () => void;
+  onNavigateToTab?: (tab: string) => void;
+  onRunPrompt?: (prompt: string) => void;
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({
   issue42State,
   onOpenAuditLog,
-  onSelectEntityNode,
-  onDeployIntelligence,
   onInspectEvidence,
   onOpenExportBriefing,
-  onNavigateToRadar,
+  onNavigateToTab,
+  onRunPrompt,
 }) => {
   const isOpenBlocker = issue42State === 'open';
 
-  // Selected topology node state
-  const [selectedNodeId, setSelectedNodeId] = useState<string>('payment');
-
-  const nodesInfo: Record<string, { entity: string; response: string; dependents: string; depsList: string; action: string; actionSub: string }> = {
-    core: {
-      entity: 'Project Alpha Core',
-      response: 'v2.4.0-rc3 · Nominal Heartbeat',
-      dependents: 'All Downstream Services',
-      depsList: 'Auth, Payment, Workers, Webhooks',
-      action: 'Run Integration Matrix',
-      actionSub: 'Trigger full CI verification suite',
-    },
-    auth: {
-      entity: 'Auth / Identity Service',
-      response: '200 OK · Zero Breaches',
-      dependents: '12 External Clients',
-      depsList: 'JWT Gateway, SSO Handshake',
-      action: 'Maintain Stable Token Rotation',
-      actionSub: 'Certificate valid for 48 days',
-    },
-    payment: {
-      entity: isOpenBlocker ? 'Stripe Webhook Gateway' : 'Stripe Webhook Gateway (Patched)',
-      response: isOpenBlocker ? 'Response: 401 Unauthorized' : 'Response: 200 OK Verified',
-      dependents: '3 Microservices Affected',
-      depsList: 'Checkout, Billing, Invoicing',
-      action: isOpenBlocker ? 'Rotate Staging Secret' : 'Deploy Verified Release Candidate',
-      actionSub: isOpenBlocker ? 'PulseDesk ready to patch HMAC payload' : 'Staging pipeline confirmed green',
-    },
-    pr342: {
-      entity: 'PR #342 Diff (webhook.rb)',
-      response: '+142 / -38 lines changed',
-      dependents: 'Staging Integration Suite',
-      depsList: 'webhook_spec.rb, intent_v2.rb',
-      action: isOpenBlocker ? 'Review Pending Review Comments' : 'Approved and Merged',
-      actionSub: 'Authored by @alex-lead',
-    },
-    release: {
-      entity: isOpenBlocker ? 'Release Gating: HALT Alpha-4' : 'Release Gating: APPROVED',
-      response: isOpenBlocker ? 'Stage deployment deferred' : 'Greenlight for Staging Demo',
-      dependents: 'Pilot Cohort Delta Onboarding',
-      depsList: 'Production Sandbox, Demo Cluster',
-      action: isOpenBlocker ? 'Resolve Issue #42 Blocker' : 'Trigger Staging Deploy',
-      actionSub: isOpenBlocker ? 'Approval on hold until tests pass' : 'Signed off by VP Finance',
-    },
+  const handleActionClick = (prompt: string) => {
+    if (onRunPrompt) {
+      onRunPrompt(prompt);
+    }
   };
 
-  const selectedInfo = nodesInfo[selectedNodeId] || nodesInfo.payment;
-
   return (
-    <div className="flex-1 flex flex-col gap-6 pb-52 pt-2">
-      {/* TOP SECTION: Editorial Headline & Telemetry Row */}
-      <section className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 pb-2 border-b border-outline-variant/20">
-        <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-low border border-outline-variant/30 mb-3 shadow-xs">
-            <span className={`w-2 h-2 rounded-full ${isOpenBlocker ? 'bg-error animate-pulse' : 'bg-primary'}`} />
-            <span className="font-body text-[11px] tracking-wide text-on-surface font-medium">
-              Live Workspace Status
-            </span>
-            <span className="text-outline-variant text-xs">·</span>
-            <span className="font-mono text-[11px] text-on-surface-variant">
-              {isOpenBlocker ? '1 Active Blocker · Issue #42' : 'All Checks Passing · Staging Ready'}
-            </span>
-          </div>
-
-          <h1 className="font-display text-4xl lg:text-5xl text-on-surface font-semibold tracking-tight text-white leading-tight">
-            Your workspace, in focus.
-          </h1>
-
-          <p className="font-body text-base lg:text-lg text-on-surface-variant/90 mt-1 max-w-2xl font-light">
-            {isOpenBlocker ? (
-              <>
-                <span className="text-error font-semibold">1 blocker</span> ·{' '}
-                <span className="text-secondary font-medium">1 pending sign-off</span> · Here's what needs attention today.
-              </>
-            ) : (
-              <>
-                <span className="text-primary font-semibold">0 blockers</span> ·{' '}
-                <span className="text-secondary font-medium">1 staging sign-off ready</span> · All release pipelines clear.
-              </>
-            )}
-          </p>
+    <div className="flex-1 flex flex-col gap-6 pb-28 pt-1 max-w-7xl mx-auto w-full">
+      {/* 1. HERO BANNER: Atmospheric Landscape Graphic + Project Status */}
+      <section className="relative overflow-hidden rounded-2xl bg-white border border-slate-200/90 shadow-card p-6 sm:p-8">
+        {/* Subtle Mountain Landscape Silhouette on right */}
+        <div className="absolute right-0 top-0 bottom-0 w-1/2 pointer-events-none opacity-20 sm:opacity-40 overflow-hidden select-none">
+          <svg
+            className="w-full h-full object-cover"
+            viewBox="0 0 600 240"
+            preserveAspectRatio="xMidYMid slice"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M 120 240 L 260 90 L 380 180 L 480 60 L 600 240 Z"
+              fill="url(#mountainGrad1)"
+            />
+            <path
+              d="M 0 240 L 160 130 L 290 210 L 420 110 L 600 240 Z"
+              fill="url(#mountainGrad2)"
+              opacity="0.6"
+            />
+            <defs>
+              <linearGradient id="mountainGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.4" />
+                <stop offset="100%" stopColor="#93C5FD" stopOpacity="0.05" />
+              </linearGradient>
+              <linearGradient id="mountainGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#60A5FA" stopOpacity="0.3" />
+                <stop offset="100%" stopColor="#EFF6FF" stopOpacity="0.05" />
+              </linearGradient>
+            </defs>
+          </svg>
         </div>
 
-        {/* Real Workspace Intelligence KPI Strip & Export Briefing CTA */}
-        <div className="flex flex-col xl:flex-row items-stretch xl:items-center gap-3">
-          {onOpenExportBriefing && (
-            <button
-              onClick={onOpenExportBriefing}
-              className="px-3.5 py-2.5 rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant/30 flex items-center justify-center gap-2 text-xs font-mono text-on-surface hover:text-primary transition-all shadow-sm cursor-pointer shrink-0"
-              title="Export formatted Executive Briefing report"
-            >
-              <FileText className="w-4 h-4 text-primary" />
-              <span>Export Briefing</span>
-            </button>
-          )}
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {/* Metric 1: Open Issues */}
-            <div className="px-4 py-2.5 rounded-xl bg-surface-container-lowest hairline-border flex items-center gap-3 shadow-md">
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                isOpenBlocker ? 'bg-error-container/20 text-error' : 'bg-primary/20 text-primary'
-              }`}>
-                <Layers className="w-4 h-4" />
-              </div>
-              <div>
-                <div className="font-body text-[11px] text-on-surface-variant font-medium uppercase tracking-wider">
-                  Open Issues
-                </div>
-                <div className={`font-headline text-base font-semibold leading-tight ${
-                  isOpenBlocker ? 'text-error' : 'text-primary'
-                }`}>
-                  {isOpenBlocker ? '1 Blocker · 1 Open' : '0 Blockers · 1 Open'}
-                </div>
-                <div className="text-[10px] font-mono text-outline-variant">Issue #42 & #47</div>
-              </div>
+        <div className="relative z-10 flex flex-col justify-between gap-6">
+          <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+            <div>
+              <span className="text-xs font-medium text-slate-500">Good evening, Shaunak</span>
+              <h1 className="font-bold text-3xl sm:text-4xl text-slate-900 tracking-tight mt-1">
+                Your project, in context.
+              </h1>
+              <p className="text-sm text-slate-500 mt-1 max-w-xl font-normal">
+                Here's what matters today, pulled from your connected sources.
+              </p>
             </div>
 
-            {/* Metric 2: Pending Sign-offs */}
-            <div className="px-4 py-2.5 rounded-xl bg-surface-container-lowest hairline-border flex items-center gap-3 shadow-md">
-              <div className="w-8 h-8 rounded-lg bg-secondary-container/20 text-secondary flex items-center justify-center">
-                <CheckCircle2 className="w-4 h-4" />
-              </div>
-              <div>
-                <div className="font-body text-[11px] text-on-surface-variant font-medium uppercase tracking-wider">
-                  Pending Sign-offs
-                </div>
-                <div className="font-headline text-base font-semibold text-secondary leading-tight">
-                  {isOpenBlocker ? '1 Staging Approval' : 'Ready for Demo'}
-                </div>
-                <div className="text-[10px] font-mono text-outline-variant">Elena Rostova · VP Finance</div>
-              </div>
-            </div>
-
-            {/* Metric 3: Sources Synced */}
-            <div className="px-4 py-2.5 rounded-xl bg-surface-container-lowest hairline-border flex items-center gap-3 shadow-md">
-              <div className="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary">
-                <Clock className="w-4 h-4" />
-              </div>
-              <div>
-                <div className="font-body text-[11px] text-on-surface-variant font-medium uppercase tracking-wider">
-                  Last Verified
-                </div>
-                <div className="font-mono text-sm font-semibold text-on-surface leading-tight">14m ago</div>
-                <div className="text-[10px] font-mono text-outline-variant">GitHub MCP · Gmail OAuth</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* SIGNATURE FEATURE BANNER: Change Radar Quick Teaser */}
-      {onNavigateToRadar && (
-        <div
-          onClick={onNavigateToRadar}
-          className="p-3.5 px-4 rounded-xl bg-surface-container-low hairline-border hover:border-primary/40 transition-all flex items-center justify-between group cursor-pointer shadow-sm"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-7 h-7 rounded-lg bg-primary/15 text-primary flex items-center justify-center">
-              <Radar className="w-4 h-4" />
-            </div>
-            <div className="text-xs font-mono text-on-surface-variant flex items-center gap-2 flex-wrap">
-              <span className="text-primary font-semibold uppercase tracking-wider text-[10px]">Change Radar</span>
-              <span className="text-outline-variant">·</span>
-              <span className="text-on-surface">
-                {isOpenBlocker
-                  ? 'Issue #42 reopened from closed state · Staging approval pending'
-                  : 'Issue #42 verified closed · Staging sign-off ready'}
-              </span>
-            </div>
-          </div>
-          <div className="text-xs font-mono text-primary flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-            <span>View Full Radar</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </div>
-        </div>
-      )}
-
-      {/* CRITICAL BLOCKER BANNER: Atmospheric Black Feather & Socialist Dark Red */}
-      <section className={`relative overflow-hidden rounded-2xl p-6 shadow-xl shadow-black/40 ${
-        isOpenBlocker
-          ? 'bg-gradient-to-r from-surface-container-lowest via-surface-container-low to-error-container/20 border border-error-container/60'
-          : 'bg-gradient-to-r from-surface-container-lowest via-surface-container-low to-secondary-container/25 hairline-border-strong'
-      }`}>
-        <div className="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-primary/10 filter blur-3xl pointer-events-none" />
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
-          <div className="flex items-start gap-4 max-w-4xl">
-            <div className="relative shrink-0 mt-1">
-              <div
-                className={`w-10 h-10 rounded-xl border flex items-center justify-center ${
-                  isOpenBlocker
-                    ? 'bg-error-container/20 border-error-container text-error'
-                    : 'bg-primary/20 border-primary text-primary'
-                }`}
-              >
-                <span
-                  className="material-symbols-outlined text-xl"
-                  data-icon={isOpenBlocker ? 'error' : 'check_circle'}
-                >
-                  {isOpenBlocker ? 'error' : 'check_circle'}
-                </span>
-              </div>
-              {isOpenBlocker && (
-                <div className="absolute -inset-1 rounded-xl bg-error-container/25 pulse-ring pointer-events-none" />
-              )}
-            </div>
-
-            <div className="space-y-1.5">
-              <div className="flex items-center gap-2.5 flex-wrap">
-                <span
-                  className={`px-2 py-0.5 rounded text-[11px] uppercase tracking-wider font-semibold font-mono ${
-                    isOpenBlocker
-                      ? 'bg-error-container text-on-error font-bold'
-                      : 'bg-primary/20 text-primary border border-primary/40'
-                  }`}
-                >
-                  {isOpenBlocker ? 'High-Severity Blocker' : 'Blocker Cleared'}
-                </span>
-                <span className="text-[11px] text-secondary font-mono">ALPHA-RELEASE-CRITICAL</span>
-                <span className="text-outline-variant text-xs">·</span>
-                <span className="text-[11px] text-on-surface-variant font-mono">Staging Cluster #4</span>
-              </div>
-
-              <h2 className="font-headline text-lg sm:text-xl font-semibold text-white tracking-tight leading-snug">
-                {isOpenBlocker
-                  ? 'Payment integration is blocking the next release — Stripe webhook HMAC signature mismatch in staging awaits review.'
-                  : 'Payment integration blocker resolved — Issue #42 verified closed in live repository. Integration test suite passing.'}
-              </h2>
-
-              <p className="font-body text-sm text-on-surface leading-relaxed">
-                {isOpenBlocker ? (
-                  <>
-                    Detected 28 failed invocations during{' '}
-                    <code className="font-mono text-secondary bg-surface-container-high px-2 py-0.5 rounded text-xs font-semibold border border-outline-variant/30">
-                      test_checkout_intent_v2
-                    </code>
-                    . Root cause isolated to payload serialization drift in commit{' '}
-                    <span className="font-mono text-primary bg-surface-container-high px-2 py-0.5 rounded text-xs font-semibold border border-primary/30">
-                      9f2e81a
-                    </span>
-                    .
-                  </>
-                ) : (
-                  <>
-                    All 28 assertions passed in{' '}
-                    <code className="font-mono text-primary bg-surface-container-high px-2 py-0.5 rounded text-xs font-semibold border border-primary/30">
-                      test_checkout_intent_v2
-                    </code>
-                    . Verified against live GitHub API status. Ready for staging demo sign-off.
-                  </>
-                )}
+            {/* Right Quote Pill */}
+            <div className="self-start lg:self-center bg-slate-50 border border-slate-200/80 rounded-xl px-4 py-2.5 max-w-xs shadow-2xs">
+              <p className="text-xs text-slate-600 italic">
+                “Clear context leads to better decisions.”
               </p>
             </div>
           </div>
 
-          {/* Banner CTAs */}
-          <div className="flex items-center gap-3 shrink-0 self-end lg:self-center">
-            <button
-              onClick={onOpenAuditLog}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-surface-container-high/60 hover:bg-surface-container-highest border border-outline-variant/30 text-on-surface font-body text-xs transition-colors cursor-pointer"
-              type="button"
-            >
-              <span className="material-symbols-outlined text-sm" data-icon="description">
-                description
-              </span>
-              <span>Audit Log</span>
-            </button>
+          {/* Integrated Source Status Strip */}
+          <div className="flex items-center flex-wrap gap-2.5 pt-2 border-t border-slate-100">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-700">
+              <GitPullRequest className="w-3.5 h-3.5 text-slate-600" />
+              <span>GitHub</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span className="text-slate-400 font-normal">Connected</span>
+            </div>
+
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-700">
+              <Mail className="w-3.5 h-3.5 text-slate-600" />
+              <span>Gmail</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span className="text-slate-400 font-normal">Connected</span>
+            </div>
+
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-700">
+              <Layers className="w-3.5 h-3.5 text-slate-600" />
+              <span>Linear</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span className="text-slate-400 font-normal">Connected</span>
+            </div>
 
             <button
-              onClick={() => onInspectEvidence('fixture:github:42')}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-on-surface text-surface font-body text-xs font-semibold shadow-lg hover:bg-white transition-all transform active:scale-95 cursor-pointer"
-              type="button"
+              onClick={() => onNavigateToTab?.('sources')}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-xs font-medium text-slate-600 hover:text-blue-600 transition-colors cursor-pointer"
             >
-              <span className="material-symbols-outlined text-base text-surface" data-icon="rate_review">
-                rate_review
-              </span>
-              <span>Review PR #342</span>
+              <Plus className="w-3.5 h-3.5" />
+              <span>Add source</span>
             </button>
           </div>
         </div>
       </section>
 
-      {/* CENTER PIECE BENTO GRID: Living Dependency Map (Left 7 Cols) + Right Activity Stream (5 Cols) */}
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
-        {/* LEFT: Interactive Entity Topology / Living Map (7 Cols) */}
-        <section className="xl:col-span-7 rounded-2xl bg-surface-container-lowest hairline-border p-6 shadow-xl flex flex-col gap-5">
-          {/* Header & Topology Controls */}
-          <div className="flex items-center justify-between border-b border-outline-variant/20 pb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-primary">
-                <span className="material-symbols-outlined text-lg" data-icon="hub">
-                  hub
+      {/* 2. FOUR METRIC STATUS CARDS */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Card 1: Blocking Issues */}
+        <div
+          onClick={() => onInspectEvidence('fixture:github:42')}
+          className="p-5 rounded-2xl bg-red-50/50 border border-red-100 hover:border-red-200 transition-all cursor-pointer group shadow-card"
+        >
+          <div className="flex items-center gap-2.5 text-red-600 mb-3">
+            <div className="w-7 h-7 rounded-lg bg-red-100/70 flex items-center justify-center">
+              <AlertTriangle className="w-4 h-4 text-red-600" />
+            </div>
+            <span className="text-xs font-semibold uppercase tracking-wider text-red-700">
+              Blocking Issues
+            </span>
+          </div>
+          <div className="flex items-baseline justify-between">
+            <div className="text-2xl font-bold text-slate-900">
+              {isOpenBlocker ? '2' : '0'}
+            </div>
+            <div className="flex items-center gap-1 text-xs font-medium text-red-600 group-hover:translate-x-0.5 transition-transform">
+              <span>{isOpenBlocker ? 'need attention' : 'all clear'}</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </div>
+          </div>
+        </div>
+
+        {/* Card 2: Pending Decisions */}
+        <div
+          onClick={() => onInspectEvidence('fixture:gmail:approval-1')}
+          className="p-5 rounded-2xl bg-blue-50/50 border border-blue-100 hover:border-blue-200 transition-all cursor-pointer group shadow-card"
+        >
+          <div className="flex items-center gap-2.5 text-blue-600 mb-3">
+            <div className="w-7 h-7 rounded-lg bg-blue-100/70 flex items-center justify-center">
+              <FileText className="w-4 h-4 text-blue-600" />
+            </div>
+            <span className="text-xs font-semibold uppercase tracking-wider text-blue-700">
+              Pending Decisions
+            </span>
+          </div>
+          <div className="flex items-baseline justify-between">
+            <div className="text-2xl font-bold text-slate-900">1</div>
+            <div className="flex items-center gap-1 text-xs font-medium text-blue-600 group-hover:translate-x-0.5 transition-transform">
+              <span>needs your input</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </div>
+          </div>
+        </div>
+
+        {/* Card 3: Recent Changes */}
+        <div
+          onClick={() => onNavigateToTab?.('changes')}
+          className="p-5 rounded-2xl bg-emerald-50/50 border border-emerald-100 hover:border-emerald-200 transition-all cursor-pointer group shadow-card"
+        >
+          <div className="flex items-center gap-2.5 text-emerald-600 mb-3">
+            <div className="w-7 h-7 rounded-lg bg-emerald-100/70 flex items-center justify-center">
+              <GitBranch className="w-4 h-4 text-emerald-600" />
+            </div>
+            <span className="text-xs font-semibold uppercase tracking-wider text-emerald-700">
+              Recent Changes
+            </span>
+          </div>
+          <div className="flex items-baseline justify-between">
+            <div className="text-2xl font-bold text-slate-900">12</div>
+            <div className="flex items-center gap-1 text-xs font-medium text-emerald-600 group-hover:translate-x-0.5 transition-transform">
+              <span>since yesterday</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </div>
+          </div>
+        </div>
+
+        {/* Card 4: Your Focus */}
+        <div
+          onClick={() => handleActionClick('Find root cause for Issue #42 and draft a staging fix')}
+          className="p-5 rounded-2xl bg-purple-50/50 border border-purple-100 hover:border-purple-200 transition-all cursor-pointer group shadow-card"
+        >
+          <div className="flex items-center gap-2.5 text-purple-600 mb-3">
+            <div className="w-7 h-7 rounded-lg bg-purple-100/70 flex items-center justify-center">
+              <Target className="w-4 h-4 text-purple-600" />
+            </div>
+            <span className="text-xs font-semibold uppercase tracking-wider text-purple-700">
+              Your Focus
+            </span>
+          </div>
+          <div className="flex items-baseline justify-between">
+            <div className="text-xs font-semibold text-slate-900 truncate max-w-[140px]">
+              Review Stripe fix
+            </div>
+            <div className="flex items-center gap-1 text-xs font-medium text-purple-600 group-hover:translate-x-0.5 transition-transform">
+              <span>integration</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. MAIN CONTENT GRID (8 Cols Left / 4 Cols Right) */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* LEFT COLUMN: Top Blockers & Recent Activity (8 Cols) */}
+        <div className="lg:col-span-8 space-y-6">
+          {/* Card A: Top Blockers */}
+          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-card p-6">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+              <div className="flex items-center gap-2">
+                <span className="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 text-red-500" />
+                  Top Blockers
                 </span>
               </div>
-              <div>
-                <h3 className="font-headline text-base font-semibold text-on-surface">Living Dependency Topology</h3>
-                <p className="font-body text-xs text-on-surface-variant">
-                  Real-time architectural node traversal & release blast radius
-                </p>
+              <button
+                onClick={onOpenAuditLog}
+                className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 cursor-pointer"
+              >
+                <span>View all</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            {/* Blocker Item 1 */}
+            <div
+              onClick={() => onInspectEvidence('fixture:github:42')}
+              className="p-4 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-200/80 cursor-pointer mb-3"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-3">
+                  <span className="w-2 h-2 rounded-full bg-red-500 mt-2 shrink-0" />
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-slate-900 font-mono">#342</span>
+                      <h3 className="text-sm font-semibold text-slate-900 hover:text-blue-600 transition-colors">
+                        Payment integration is blocking the next release
+                      </h3>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-1">
+                      Stripe webhook HMAC signature mismatch in staging.
+                    </p>
+
+                    {/* Tags */}
+                    <div className="flex items-center gap-1.5 mt-2.5 flex-wrap">
+                      <span className="px-2 py-0.5 rounded-md bg-red-50 text-red-600 border border-red-200/60 text-[10px] font-medium font-mono">
+                        bug
+                      </span>
+                      <span className="px-2 py-0.5 rounded-md bg-orange-50 text-orange-600 border border-orange-200/60 text-[10px] font-medium font-mono">
+                        high priority
+                      </span>
+                      <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-medium font-mono">
+                        staging
+                      </span>
+                      <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-medium font-mono">
+                        stripe
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 shrink-0 text-xs text-slate-400">
+                  <span className="font-mono text-[11px]">22m ago</span>
+                  <div className="flex items-center gap-1">
+                    <MessageSquare className="w-3.5 h-3.5" />
+                    <span className="text-[11px] font-medium">8</span>
+                  </div>
+                  {/* Avatar stack */}
+                  <div className="flex -space-x-1.5">
+                    <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[9px] font-bold ring-2 ring-white">
+                      A
+                    </div>
+                    <div className="w-5 h-5 rounded-full bg-purple-600 text-white flex items-center justify-center text-[9px] font-bold ring-2 ring-white">
+                      E
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-surface-container text-[11px] font-mono text-on-surface-variant border border-outline-variant/30">
-                <span className="material-symbols-outlined text-xs text-tertiary" data-icon="sync">
-                  sync
+            {/* Blocker Item 2 */}
+            <div
+              onClick={() => onInspectEvidence('fixture:github:42')}
+              className="p-4 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-200/80 cursor-pointer"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-3">
+                  <span className="w-2 h-2 rounded-full bg-red-500 mt-2 shrink-0" />
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-slate-900 font-mono">#318</span>
+                      <h3 className="text-sm font-semibold text-slate-900 hover:text-blue-600 transition-colors">
+                        Onboarding flow failing for some users
+                      </h3>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-1">
+                      Intermittent 200 OK but empty response from Linear API.
+                    </p>
+
+                    {/* Tags */}
+                    <div className="flex items-center gap-1.5 mt-2.5 flex-wrap">
+                      <span className="px-2 py-0.5 rounded-md bg-red-50 text-red-600 border border-red-200/60 text-[10px] font-medium font-mono">
+                        bug
+                      </span>
+                      <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-medium font-mono">
+                        medium
+                      </span>
+                      <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-medium font-mono">
+                        production
+                      </span>
+                      <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-medium font-mono">
+                        linear
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 shrink-0 text-xs text-slate-400">
+                  <span className="font-mono text-[11px]">1h ago</span>
+                  <div className="flex items-center gap-1">
+                    <MessageSquare className="w-3.5 h-3.5" />
+                    <span className="text-[11px] font-medium">4</span>
+                  </div>
+                  <div className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[9px] font-bold ring-2 ring-white">
+                    S
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Card B: Recent Activity */}
+          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-card p-6">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+              <div className="flex items-center gap-2">
+                <span className="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <GitBranch className="w-4 h-4 text-emerald-600" />
+                  Recent Activity
                 </span>
-                <span>LIVE 30FPS</span>
               </div>
               <button
-                onClick={() => setSelectedNodeId('payment')}
-                className="w-7 h-7 rounded-md bg-surface-container hover:bg-surface-container-high flex items-center justify-center text-on-surface-variant transition-colors"
-                title="Fit to Screen"
-                type="button"
+                onClick={() => onNavigateToTab?.('changes')}
+                className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 cursor-pointer"
               >
-                <span className="material-symbols-outlined text-sm" data-icon="fit_screen">
-                  fit_screen
-                </span>
+                <span>View all</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            {/* Connecting Timeline Thread */}
+            <div className="relative pl-6 space-y-6 before:absolute before:left-2.5 before:top-3 before:bottom-3 before:w-0.5 before:bg-slate-200">
+              {/* Event 1 */}
+              <div className="relative flex items-start justify-between gap-4">
+                <span className="absolute -left-6 top-1.5 w-3 h-3 rounded-full bg-blue-600 ring-4 ring-white" />
+                <div>
+                  <div className="text-xs text-slate-900">
+                    <strong className="font-semibold text-slate-900">Alex</strong> pushed 3 commits to <code className="font-mono bg-slate-100 px-1 py-0.5 rounded text-[11px]">main</code>
+                  </div>
+                  <div className="text-xs text-slate-500 mt-0.5 font-mono">feat: Improve webhook validation</div>
+                </div>
+                <span className="text-[11px] font-mono text-slate-400 shrink-0">2h ago</span>
+              </div>
+
+              {/* Event 2 */}
+              <div className="relative flex items-start justify-between gap-4">
+                <span className="absolute -left-6 top-1.5 w-3 h-3 rounded-full bg-red-500 ring-4 ring-white" />
+                <div>
+                  <div className="text-xs text-slate-900">
+                    <strong className="font-semibold text-slate-900">New issue #356</strong> opened
+                  </div>
+                  <div className="text-xs text-slate-500 mt-0.5">Staging DB migration conflict</div>
+                </div>
+                <span className="text-[11px] font-mono text-slate-400 shrink-0">3h ago</span>
+              </div>
+
+              {/* Event 3 */}
+              <div className="relative flex items-start justify-between gap-4">
+                <span className="absolute -left-6 top-1.5 w-3 h-3 rounded-full bg-blue-500 ring-4 ring-white" />
+                <div>
+                  <div className="text-xs text-slate-900">
+                    <strong className="font-semibold text-slate-900">PR #341</strong> marked as ready for review
+                  </div>
+                  <div className="text-xs text-slate-500 mt-0.5">Update onboarding copy and error handling</div>
+                </div>
+                <span className="text-[11px] font-mono text-slate-400 shrink-0">5h ago</span>
+              </div>
+
+              {/* Event 4 */}
+              <div className="relative flex items-start justify-between gap-4">
+                <span className="absolute -left-6 top-1.5 w-3 h-3 rounded-full bg-emerald-500 ring-4 ring-white" />
+                <div>
+                  <div className="text-xs text-slate-900">
+                    <strong className="font-semibold text-slate-900">Deployment to staging completed</strong>
+                  </div>
+                  <div className="text-xs text-slate-500 mt-0.5 font-mono">v2.4.0-rc3</div>
+                </div>
+                <span className="text-[11px] font-mono text-slate-400 shrink-0">6h ago</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN: Suggested Next Actions & Project Health (4 Cols) */}
+        <div className="lg:col-span-4 space-y-6">
+          {/* Card C: Suggested Next Actions */}
+          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-card p-6">
+            <div className="flex items-center gap-2 pb-4 border-b border-slate-100 mb-4">
+              <Sparkles className="w-4 h-4 text-blue-600" />
+              <h2 className="text-base font-bold text-slate-900">Suggested Next Actions</h2>
+            </div>
+
+            <div className="space-y-3">
+              {/* Action 1 */}
+              <button
+                onClick={() => handleActionClick('Review PR #342 fix for Stripe webhook signature verification')}
+                className="w-full p-3 rounded-xl bg-slate-50 hover:bg-blue-50/60 border border-slate-200/80 hover:border-blue-200 transition-all flex items-center justify-between text-left group cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">
+                      Review PR #342
+                    </div>
+                    <div className="text-[11px] text-slate-500">Fix Stripe webhook verification</div>
+                  </div>
+                </div>
+                <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all shrink-0" />
+              </button>
+
+              {/* Action 2 */}
+              <button
+                onClick={() => handleActionClick('Summarize design feedback on the onboarding flow')}
+                className="w-full p-3 rounded-xl bg-slate-50 hover:bg-blue-50/60 border border-slate-200/80 hover:border-blue-200 transition-all flex items-center justify-between text-left group cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+                    <MessageSquare className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">
+                      Respond to design feedback
+                    </div>
+                    <div className="text-[11px] text-slate-500">3 new comments on onboarding flow</div>
+                  </div>
+                </div>
+                <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all shrink-0" />
+              </button>
+
+              {/* Action 3 */}
+              <button
+                onClick={() => handleActionClick('Check staging deployment status and run smoke test suite')}
+                className="w-full p-3 rounded-xl bg-slate-50 hover:bg-blue-50/60 border border-slate-200/80 hover:border-blue-200 transition-all flex items-center justify-between text-left group cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
+                    <Play className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">
+                      Check staging deployment
+                    </div>
+                    <div className="text-[11px] text-slate-500">Verify latest build and run smoke tests</div>
+                  </div>
+                </div>
+                <ArrowRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all shrink-0" />
               </button>
             </div>
           </div>
 
-          {/* Map Canvas with Gridlines & Coordinates (Black Feather Deep Base #061517) */}
-          <div className="relative w-full h-[460px] rounded-xl bg-[#061517] topology-grid hairline-border overflow-hidden select-none group">
-            {/* Coordinate Markers */}
-            <div className="absolute top-2 left-3 font-mono text-[10px] text-outline-variant tracking-wider">
-              LAT 47.61 · LNG -122.33 · EPSG:4326
-            </div>
-            <div className="absolute bottom-2 left-3 font-mono text-[10px] text-outline-variant tracking-wider">
-              GRID_RESOLUTION_28PX · GRAPH_DEGREE_4
-            </div>
-
-            {/* Connecting Dependency SVG Lines */}
-            <svg className="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <linearGradient id="coralGrad" x1="0%" x2="100%" y1="0%" y2="100%">
-                  <stop offset="0%" stopColor="#FF8A8A" stopOpacity="0.8" />
-                  <stop offset="100%" stopColor="#941D1D" stopOpacity="0.95" />
-                </linearGradient>
-                <linearGradient id="greenGrad" x1="0%" x2="100%" y1="0%" y2="100%">
-                  <stop offset="0%" stopColor="#336269" stopOpacity="0.9" />
-                  <stop offset="100%" stopColor="#93D4D8" stopOpacity="0.8" />
-                </linearGradient>
-              </defs>
-              {/* Line 1: Alpha Core to Payment Integration */}
-              <path
-                d="M 175 140 C 240 140, 240 230, 310 230"
-                fill="none"
-                stroke={isOpenBlocker ? 'url(#coralGrad)' : 'url(#greenGrad)'}
-                strokeDasharray={isOpenBlocker ? '4 2' : 'none'}
-                strokeWidth="2"
-              />
-              {/* Line 2: Alpha Core to Auth Service */}
-              <path d="M 175 140 C 230 140, 230 75, 310 75" fill="none" stroke="url(#greenGrad)" strokeWidth="1.75" />
-              {/* Line 3: Payment Integration to PR #342 Diff */}
-              <path
-                d="M 450 230 C 500 230, 500 230, 530 230"
-                fill="none"
-                stroke={isOpenBlocker ? '#941D1D' : '#93D4D8'}
-                strokeWidth="2.5"
-              />
-              {/* Line 4: PR #342 Diff to Release Blocker */}
-              <path
-                d="M 640 230 C 670 230, 670 330, 550 350"
-                fill="none"
-                stroke={isOpenBlocker ? '#941D1D' : '#93D4D8'}
-                strokeDasharray={isOpenBlocker ? '6 3' : 'none'}
-                strokeWidth="2"
-              />
-            </svg>
-
-            {/* Node 1: Project Alpha Core (Root) */}
-            <div
-              onClick={() => setSelectedNodeId('core')}
-              className={`absolute left-6 top-24 w-44 rounded-xl bg-surface-container-low hairline-border-strong p-3.5 shadow-2xl backdrop-blur-xs cursor-pointer transition-all ${
-                selectedNodeId === 'core' ? 'ring-2 ring-primary border-primary' : 'hover:border-primary'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className="px-1.5 py-0.5 rounded bg-surface-container text-[10px] font-mono text-tertiary">
-                  ROOT CORE
+          {/* Card D: Project Health */}
+          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-card p-6">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+              <div className="flex items-center gap-2">
+                <span className="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <Target className="w-4 h-4 text-emerald-600" />
+                  Project Health
                 </span>
-                <span className="w-2 h-2 rounded-full bg-tertiary" />
               </div>
-              <div className="font-headline text-xs font-semibold text-on-surface">Project Alpha Core</div>
-              <div className="font-mono text-[10px] text-on-surface-variant mt-0.5">v2.4.0-rc3 · Node 0x1A</div>
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
             </div>
 
-            {/* Node 2: Auth / Identity Service (Stable) */}
-            <div
-              onClick={() => setSelectedNodeId('auth')}
-              className={`absolute left-72 top-8 w-48 rounded-xl bg-surface-container-low hairline-border p-3 shadow-lg cursor-pointer transition-all ${
-                selectedNodeId === 'auth' ? 'ring-2 ring-tertiary border-tertiary' : 'hover:border-tertiary'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="px-1.5 py-0.2 rounded bg-tertiary-container/30 text-tertiary text-[10px] font-mono font-semibold">
-                  STABLE
-                </span>
-                <span className="material-symbols-outlined text-xs text-tertiary" data-icon="lock">
-                  lock
+            <div className="space-y-3.5 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500">Issue trend</span>
+                <span className="font-semibold text-red-600 flex items-center gap-1 font-mono">
+                  +3 this week
+                  <TrendingUp className="w-3.5 h-3.5" />
                 </span>
               </div>
-              <div className="font-headline text-xs font-semibold text-on-surface">Auth / Identity Service</div>
-              <div className="font-mono text-[10px] text-tertiary">0 alerts · JWT HMAC valid</div>
-            </div>
 
-            {/* Node 3: Payment Integration (Interrupted / Blocker) */}
-            <div
-              onClick={() => setSelectedNodeId('payment')}
-              className={`absolute left-72 top-44 w-52 rounded-xl bg-surface-container-highest border-2 p-3.5 shadow-2xl cursor-pointer transition-all ${
-                selectedNodeId === 'payment' ? 'ring-2 ring-primary' : ''
-              } ${
-                isOpenBlocker
-                  ? 'border-error-container shadow-error-container/25'
-                  : 'border-primary shadow-primary/20'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-1">
-                <span
-                  className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-bold tracking-wider ${
-                    isOpenBlocker
-                      ? 'bg-error-container text-on-error'
-                      : 'bg-primary/20 text-primary border border-primary/40'
-                  }`}
-                >
-                  {isOpenBlocker ? 'BLOCKING' : 'RESOLVED'}
-                </span>
-                <span
-                  className={`material-symbols-outlined text-sm ${
-                    isOpenBlocker ? 'text-error animate-pulse' : 'text-primary'
-                  }`}
-                  data-icon={isOpenBlocker ? 'sync_problem' : 'check_circle'}
-                >
-                  {isOpenBlocker ? 'sync_problem' : 'check_circle'}
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500">PR cycle time</span>
+                <span className="font-semibold text-emerald-600 flex items-center gap-1 font-mono">
+                  2.1 days
+                  <TrendingDown className="w-3.5 h-3.5" />
                 </span>
               </div>
-              <div className="font-headline text-xs font-semibold text-white">Payment Integration</div>
-              <div
-                className={`font-mono text-[10px] mt-0.5 ${isOpenBlocker ? 'text-error' : 'text-primary'}`}
-              >
-                {isOpenBlocker ? 'Stripe Webhook SIG ERR' : 'HMAC Verified 200 OK'}
-              </div>
-            </div>
 
-            {/* Node 4: PR #342 Diff */}
-            <div
-              onClick={() => setSelectedNodeId('pr342')}
-              className={`absolute right-8 top-44 w-44 rounded-xl bg-surface-container-high hairline-border-strong p-3 shadow-xl cursor-pointer transition-all ${
-                selectedNodeId === 'pr342' ? 'ring-2 ring-secondary border-secondary' : 'hover:border-secondary'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="px-1.5 py-0.5 rounded bg-secondary-container text-secondary text-[10px] font-mono">
-                  PULL REQUEST
-                </span>
-                <span className="material-symbols-outlined text-sm text-secondary" data-icon="commit">
-                  commit
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500">Deployment status</span>
+                <span className="font-medium text-slate-900 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                  Healthy
                 </span>
               </div>
-              <div className="font-headline text-xs font-semibold text-on-surface">PR #342 Diff</div>
-              <div className="font-mono text-[10px] text-on-surface-variant">+142 / -38 lines (webhook.rb)</div>
-            </div>
 
-            {/* Node 5: Release Blocker (HALT Alpha-4) */}
-            <div
-              onClick={() => setSelectedNodeId('release')}
-              className={`absolute right-24 bottom-10 w-56 rounded-xl bg-surface-container-lowest border p-3.5 shadow-2xl cursor-pointer transition-all ${
-                isOpenBlocker ? 'border-error-container' : 'border-primary'
-              } ${selectedNodeId === 'release' ? 'ring-2 ring-primary' : ''}`}
-            >
-              <div className="flex items-center justify-between mb-1">
-                <span
-                  className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-wider font-mono ${
-                    isOpenBlocker
-                      ? 'bg-error-container text-on-error'
-                      : 'bg-primary/20 text-primary border border-primary/40'
-                  }`}
-                >
-                  {isOpenBlocker ? 'HALT Alpha-4' : 'APPROVED'}
-                </span>
-                <span
-                  className={`material-symbols-outlined text-sm ${isOpenBlocker ? 'text-error' : 'text-primary'}`}
-                  data-icon={isOpenBlocker ? 'cancel' : 'check'}
-                >
-                  {isOpenBlocker ? 'cancel' : 'check'}
-                </span>
-              </div>
-              <div className="font-headline text-xs font-semibold text-primary">
-                {isOpenBlocker ? 'Release Gating Triggered' : 'Release Gating Cleared'}
-              </div>
-              <div className="font-mono text-[10px] text-on-surface-variant">
-                {isOpenBlocker ? 'Stage deployment deferred' : 'Greenlit for demo rollout'}
-              </div>
-            </div>
-
-            {/* Topology Map Overlay Legend */}
-            <div className="absolute bottom-3 right-3 px-3 py-1.5 rounded-lg bg-surface-container-lowest/90 backdrop-blur-md hairline-border flex items-center gap-3 text-xs">
-              <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-tertiary" />
-                <span className="text-on-surface-variant text-[11px] font-body">Nominal</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-primary-container" />
-                <span className="text-on-surface-variant text-[11px] font-body">Blocker</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-secondary-fixed" />
-                <span className="text-on-surface-variant text-[11px] font-body">Pending PR</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Node Inspection Subpanel */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-            <div className="p-3.5 rounded-xl bg-surface-container-low hairline-border">
-              <div className="text-[10px] uppercase font-semibold text-on-surface-variant tracking-wider font-mono">
-                Selected Entity
-              </div>
-              <div className="font-headline text-xs font-semibold text-on-surface mt-0.5 truncate">
-                {selectedInfo.entity}
-              </div>
-              <div className="text-[11px] text-tertiary font-mono truncate">{selectedInfo.response}</div>
-            </div>
-
-            <div className="p-3.5 rounded-xl bg-surface-container-low hairline-border">
-              <div className="text-[10px] uppercase font-semibold text-on-surface-variant tracking-wider font-mono">
-                Direct Dependents
-              </div>
-              <div className="font-headline text-xs font-semibold text-on-surface mt-0.5 truncate">
-                {selectedInfo.dependents}
-              </div>
-              <div className="text-[11px] text-primary font-mono truncate">{selectedInfo.depsList}</div>
-            </div>
-
-            <div className="p-3.5 rounded-xl bg-surface-container-low hairline-border">
-              <div className="text-[10px] uppercase font-semibold text-on-surface-variant tracking-wider font-mono">
-                Recommended Action
-              </div>
-              <div className="font-headline text-xs font-semibold text-on-surface mt-0.5 truncate">
-                {selectedInfo.action}
-              </div>
-              <div className="text-[11px] text-secondary font-mono truncate">{selectedInfo.actionSub}</div>
-            </div>
-          </div>
-        </section>
-
-        {/* RIGHT: Chronological Curated Activity Stream (5 Cols) */}
-        <section className="xl:col-span-5 rounded-2xl bg-surface-container-lowest hairline-border p-6 shadow-xl flex flex-col gap-4">
-          <div className="flex items-center justify-between border-b border-outline-variant/20 pb-4">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-secondary">
-                <span className="material-symbols-outlined text-lg" data-icon="dynamic_feed">
-                  dynamic_feed
-                </span>
-              </div>
-              <div>
-                <h3 className="font-headline text-base font-semibold text-on-surface">Intelligence Stream</h3>
-                <p className="font-body text-xs text-on-surface-variant">
-                  Live telemetry across GitHub MCP, Gmail OAuth &amp; PostgreSQL Memory
-                </p>
-              </div>
-            </div>
-            <span className="px-2.5 py-0.5 rounded-full bg-surface-container text-[11px] font-mono text-primary font-medium">
-              4 Unresolved
-            </span>
-          </div>
-
-          {/* Activity Feed List with Hairline Dividers */}
-          <div className="flex flex-col gap-3.5 custom-scroll overflow-y-auto max-h-[570px] pr-1">
-            {/* Event 1: GitHub CI Failure */}
-            <div
-              onClick={() => onInspectEvidence('fixture:github:42')}
-              className="p-4 rounded-xl bg-surface-container-low/90 hairline-border hover:bg-surface-container hover:border-outline-variant/40 transition-all group cursor-pointer shadow-xs"
-            >
-              <div className="flex items-start justify-between gap-2 mb-2">
-                <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded bg-primary-container/20 border border-primary-container text-primary text-[10px] font-semibold font-mono">
-                    GitHub CI Failure
-                  </span>
-                  <span className="font-mono text-xs text-on-surface-variant font-medium">22m ago</span>
-                </div>
-                <span className="material-symbols-outlined text-sm text-primary" data-icon="emergency">
-                  emergency
-                </span>
-              </div>
-              <div className="font-headline text-sm font-semibold text-white">
-                auth/webhook_spec.rb failed on Line 142
-              </div>
-              <p className="font-body text-xs sm:text-sm text-on-surface mt-1 leading-relaxed">
-                Expected <code className="font-mono text-xs text-secondary bg-surface-container px-1.5 py-0.5 rounded font-semibold">HMAC-SHA256</code> calculated against raw
-                request body, but received sanitized JSON hash representation.
-              </p>
-              <div className="mt-3 pt-2.5 border-t border-outline-variant/20 flex items-center justify-between text-xs">
-                <span className="font-mono text-on-surface-variant text-xs">Runner #2948-Alpha</span>
-                <span className="text-primary hover:text-white transition-colors font-medium flex items-center gap-1">
-                  <span>View Trace</span>
-                  <span className="material-symbols-outlined text-xs" data-icon="arrow_forward">
-                    arrow_forward
-                  </span>
-                </span>
-              </div>
-            </div>
-
-            {/* Event 2: Linear Ticket LIN-894 */}
-            <div className="p-4 rounded-xl bg-surface-container-low/90 hairline-border hover:bg-surface-container hover:border-outline-variant/40 transition-all group shadow-xs">
-              <div className="flex items-start justify-between gap-2 mb-2">
-                <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded bg-secondary-container text-secondary text-[10px] font-semibold font-mono">
-                    Linear Ticket LIN-894
-                  </span>
-                  <span className="font-mono text-xs text-on-surface-variant font-medium">41m ago</span>
-                </div>
-                <span className="material-symbols-outlined text-sm text-secondary" data-icon="flag">
-                  flag
-                </span>
-              </div>
-              <div className="font-headline text-sm font-semibold text-white">
-                Marked as Urgent Blocker by Product Council
-              </div>
-              <p className="font-body text-xs sm:text-sm text-on-surface mt-1 leading-relaxed">
-                "Customer onboarding for Pilot Cohort Delta cannot initiate until recurring subscription events deliver
-                200 OK responses."
-              </p>
-              <div className="mt-3 pt-2.5 border-t border-outline-variant/20 flex items-center justify-between text-xs">
-                <span className="font-mono text-on-surface-variant text-xs">Assignee: @alex-lead</span>
-                <span className="text-secondary hover:text-white transition-colors font-medium flex items-center gap-1">
-                  <span>Open in Linear</span>
-                  <span className="material-symbols-outlined text-xs" data-icon="open_in_new">
-                    open_in_new
-                  </span>
-                </span>
-              </div>
-            </div>
-
-            {/* Event 3: Gmail Briefing from VP Finance */}
-            <div
-              onClick={() => onInspectEvidence('fixture:gmail:approval-1')}
-              className="p-4 rounded-xl bg-surface-container-low/90 hairline-border hover:bg-surface-container hover:border-outline-variant/40 transition-all group cursor-pointer shadow-xs"
-            >
-              <div className="flex items-start justify-between gap-2 mb-2">
-                <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded bg-surface-container border border-outline-variant/40 text-on-surface-variant text-[10px] font-medium font-mono">
-                    Gmail Briefing
-                  </span>
-                  <span className="font-mono text-xs text-on-surface-variant font-medium">1h ago</span>
-                </div>
-                <span className="material-symbols-outlined text-sm text-on-surface-variant" data-icon="mail">
-                  mail
-                </span>
-              </div>
-              <div className="font-headline text-sm font-semibold text-white">
-                Staging migration window confirmed for 18:00 UTC
-              </div>
-              <p className="font-body text-xs sm:text-sm text-on-surface mt-1 leading-relaxed">
-                VP Finance signed off on the sandbox gateway transition. Zero tolerance for unverified signature
-                handshakes during the 30-minute switch.
-              </p>
-              <div className="mt-3 pt-2.5 border-t border-outline-variant/20 flex items-center justify-between text-xs">
-                <span className="font-mono text-on-surface-variant text-xs">From: elena@treasury.corp</span>
-                <span className="text-primary font-mono text-xs font-semibold">Approved</span>
-              </div>
-            </div>
-
-            {/* Event 4: Pinned Context Memory */}
-            <div
-              onClick={() => onInspectEvidence('memory:fixture:memory:priority')}
-              className="p-4 rounded-xl bg-surface-container-low/90 hairline-border border-outline-variant/30 hover:bg-surface-container hover:border-primary/40 transition-all group cursor-pointer shadow-xs"
-            >
-              <div className="flex items-start justify-between gap-2 mb-2">
-                <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded bg-primary/15 text-primary text-[10px] font-semibold font-mono flex items-center gap-1 border border-primary/30">
-                    <span className="material-symbols-outlined text-xs" data-icon="bookmark">
-                      bookmark
-                    </span>
-                    <span>Pinned Context Memory</span>
-                  </span>
-                  <span className="font-mono text-[10px] text-primary font-semibold">PERSISTENT</span>
-                </div>
-                <span className="material-symbols-outlined text-sm text-primary" data-icon="neurology">
-                  neurology
-                </span>
-              </div>
-              <div className="font-headline text-sm font-semibold text-white">
-                Rollback flag primed in production config
-              </div>
-              <p className="font-body text-xs sm:text-sm text-on-surface mt-1 leading-relaxed">
-                PulseDesk AI synthesized a hot-patch fallback to Stripe v2022-11-15 legacy headers if PR #342 cannot
-                be merged before the maintenance window.
-              </p>
-              <div className="mt-3 pt-2.5 border-t border-outline-variant/20 flex items-center justify-between text-xs">
-                <span className="font-mono text-primary text-xs">Feature Flag: `ff_legacy_webhook_fallback`</span>
-                <span className="text-primary hover:text-white transition-colors font-medium flex items-center gap-1">
-                  <span>View Memory</span>
-                  <span className="material-symbols-outlined text-xs" data-icon="chevron_right">
-                    chevron_right
-                  </span>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-500">Open risks</span>
+                <span className="font-medium text-slate-900 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-red-500" />
+                  2 high · 1 medium
                 </span>
               </div>
             </div>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </div>
   );
 };
+export default DashboardView;

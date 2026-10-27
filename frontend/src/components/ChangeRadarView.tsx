@@ -1,354 +1,353 @@
 import React, { useState } from 'react';
 import {
-  Radar,
+  GitCommit,
   GitPullRequest,
-  AlertTriangle,
+  AlertCircle,
   Mail,
-  Clock,
-  ArrowRight,
-  ShieldAlert,
-  CheckCircle2,
+  Rocket,
   Filter,
+  ChevronDown,
   Sparkles,
   ExternalLink,
-  ChevronRight,
-  Copy,
-  Check,
+  Clock,
+  ArrowRight,
+  CheckCircle2,
 } from 'lucide-react';
 
 interface ChangeRadarViewProps {
-  issue42State: string;
-  onInspectEvidence: (evidenceId: string) => void;
-  onSynthesizeInChat: (query: string) => void;
-  onToggleDemoState: () => void;
+  issue42State?: string;
+  onInspectEvidence?: (evidenceId: string) => void;
+  onSynthesizeInChat?: (query: string) => void;
+  onToggleDemoState?: () => void;
 }
 
 export const ChangeRadarView: React.FC<ChangeRadarViewProps> = ({
-  issue42State,
+  issue42State = 'open',
   onInspectEvidence,
   onSynthesizeInChat,
   onToggleDemoState,
 }) => {
-  const isOpenBlocker = issue42State === 'open';
-  const [selectedFilter, setSelectedFilter] = useState<'all' | 'blockers' | 'decisions' | 'code'>('all');
-  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [activeFilter, setActiveFilter] = useState<string>('all');
+  const [selectedRange, setSelectedRange] = useState<string>('Last 7 days');
 
-  const handleCopy = (id: string, text: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
-  };
+  const filterTabs = [
+    { id: 'all', label: 'All' },
+    { id: 'commits', label: 'Commits' },
+    { id: 'prs', label: 'Pull Requests' },
+    { id: 'issues', label: 'Issues' },
+    { id: 'emails', label: 'Emails' },
+    { id: 'deployments', label: 'Deployments' },
+  ];
 
-  const radarEvents = [
+  const timelineEvents = [
     {
-      id: 'radar-issue-42',
-      type: 'blocker',
-      category: 'GitHub Issue',
-      title: isOpenBlocker ? 'Issue #42 Reopened: Release CI pipeline failing' : 'Issue #42 Resolved & Closed: CI pipeline passing',
-      timestamp: 'Today · 08:42 UTC',
-      previousState: isOpenBlocker ? 'Closed yesterday at 18:30 UTC' : 'Open (Blocking Staging)',
-      currentState: isOpenBlocker ? 'Reopened (CRITICAL BLOCKER)' : 'Closed & Verified',
-      severity: isOpenBlocker ? 'critical' : 'resolved',
-      sourceType: 'github',
-      evidenceId: 'fixture:github:42',
-      url: 'https://github.com/pulsedesk/project-alpha/issues/42',
-      summary: isOpenBlocker
-        ? 'Stripe webhook HMAC signature mismatch in staging test_checkout_intent_v2. Commit 9f2e81a broke payload serialization.'
-        : 'Stripe webhook HMAC signature patch verified in staging cluster #4. All 28 tests passing.',
-      blastRadius: isOpenBlocker ? 'Checkout, Billing, Staging Cluster #4' : 'Zero affected services',
-      actionQuery: isOpenBlocker
-        ? 'What is the root cause of Issue #42 and how do we patch the HMAC serialization?'
-        : 'Summarize how Issue #42 was resolved and confirm readiness for staging deploy.',
+      id: 'evt-1',
+      type: 'commits',
+      author: 'alex',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=64&h=64&fit=crop&crop=face',
+      title: (
+        <span>
+          <strong className="font-semibold text-slate-900">alex</strong> pushed{' '}
+          <strong className="font-semibold text-slate-900">3 commits</strong> to{' '}
+          <strong className="font-semibold text-slate-900">main</strong>
+        </span>
+      ),
+      subtitle: 'feat: Improve webhook validation and error handling',
+      tag: 'a1b2c3d',
+      time: '2h ago',
+      source: 'GitHub',
+      sourceBadge: 'bg-slate-100 text-slate-700 border-slate-200',
+      actionQuery: 'What were the 3 commits alex pushed to main today?',
     },
     {
-      id: 'radar-gmail-approval',
-      type: 'decision',
-      category: 'Gmail Sign-off',
-      title: 'Staging Demo Launch Sign-off on Hold',
-      timestamp: 'Yesterday · 16:15 UTC',
-      previousState: 'Awaiting submission',
-      currentState: isOpenBlocker ? 'On Hold (Blocked by CI test pass)' : 'Sign-off Approved for Staging',
-      severity: isOpenBlocker ? 'warning' : 'stable',
-      sourceType: 'gmail',
-      evidenceId: 'fixture:gmail:approval-1',
-      url: 'https://mail.google.com/mail/u/0/#inbox/approval-1',
-      summary:
-        'VP Finance confirmed sandbox gateway transition sign-off is conditioned strictly on green integration tests. Zero tolerance for unverified signature handshakes.',
-      blastRadius: 'Pilot Cohort Delta customer onboarding',
-      actionQuery: 'What are the exact approval requirements from the staging approval email?',
+      id: 'evt-2',
+      type: 'prs',
+      author: 'PR #341',
+      iconBadge: 'bg-blue-50 text-blue-600 border-blue-200',
+      icon: GitPullRequest,
+      title: (
+        <span>
+          <strong className="font-semibold text-slate-900">PR #341</strong> marked as ready for review
+        </span>
+      ),
+      subtitle: 'Update webhook handling logic',
+      tag: '#341',
+      time: '5h ago',
+      source: 'GitHub',
+      sourceBadge: 'bg-slate-100 text-slate-700 border-slate-200',
+      actionQuery: 'Summarize PR #341 changes and who needs to review it.',
     },
     {
-      id: 'radar-pr-342',
-      type: 'code',
-      category: 'GitHub Pull Request',
-      title: 'PR #342: Fix Stripe webhook HMAC signature calculation',
-      timestamp: 'Today · 09:15 UTC',
-      previousState: 'Draft commit',
-      currentState: 'Awaiting Code Review & Staging Diff Verification',
-      severity: 'info',
-      sourceType: 'github',
-      evidenceId: 'fixture:github:pr-342',
-      url: 'https://github.com/pulsedesk/project-alpha/pull/342',
-      summary: '+142 / -38 lines in webhook.rb and webhook_spec.rb. Raw payload passed directly to OpenSSL::HMAC rather than parsed hash.',
-      blastRadius: 'Staging Integration Suite (webhook_spec.rb)',
-      actionQuery: 'Explain the code changes in PR #342 and whether it addresses Issue #42.',
+      id: 'evt-3',
+      type: 'issues',
+      author: 'Issue #356',
+      iconBadge: 'bg-rose-50 text-rose-600 border-rose-200',
+      icon: AlertCircle,
+      title: (
+        <span>
+          <strong className="font-semibold text-slate-900">Issue #356</strong> opened
+        </span>
+      ),
+      subtitle: 'Staging DB migration conflict',
+      tag: '#356',
+      time: '6h ago',
+      source: 'GitHub',
+      sourceBadge: 'bg-slate-100 text-slate-700 border-slate-200',
+      actionQuery: 'Explain Issue #356 and the staging DB migration conflict.',
     },
     {
-      id: 'radar-memory-priority',
-      type: 'decision',
-      category: 'Recorded Memory',
-      title: 'Project Alpha Presentation vs Doc Polish Priority',
-      timestamp: '3 days ago · User directive',
-      previousState: 'Unspecified',
-      currentState: 'Active Durable Priority Context',
-      severity: 'stable',
-      sourceType: 'memory',
-      evidenceId: 'fixture:memory:priority',
-      url: null,
-      summary: 'Executive instruction: Project Alpha presentation readiness is higher priority than secondary documentation polish this week.',
-      blastRadius: 'Sprint Task Allocation',
-      actionQuery: 'What durable priorities have been remembered for Project Alpha?',
+      id: 'evt-4',
+      type: 'emails',
+      author: 'Linear',
+      avatarText: 'L',
+      avatarBg: 'bg-indigo-900 text-white',
+      title: (
+        <span>
+          <strong className="font-semibold text-slate-900">New email from Linear</strong>
+        </span>
+      ),
+      subtitle: 'Re: Onboarding flow feedback',
+      tag: 'From: design@linear.app',
+      time: '8h ago',
+      source: 'Gmail',
+      sourceBadge: 'bg-red-50 text-red-600 border-red-100',
+      actionQuery: 'What feedback did Linear send regarding the onboarding flow?',
+    },
+    {
+      id: 'evt-5',
+      type: 'deployments',
+      author: 'Deploy Staging',
+      iconBadge: 'bg-emerald-50 text-emerald-600 border-emerald-200',
+      icon: Rocket,
+      title: (
+        <span>
+          <strong className="font-semibold text-slate-900">Deployment to staging</strong> completed
+        </span>
+      ),
+      subtitle: 'v2.4.0-rc3 built and passing health checks',
+      tag: 'staging-k8s',
+      time: '10h ago',
+      source: 'Deployments',
+      sourceBadge: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+      actionQuery: 'What was included in deployment v2.4.0-rc3 to staging?',
     },
   ];
 
-  const filteredEvents = radarEvents.filter((item) => {
-    if (selectedFilter === 'all') return true;
-    if (selectedFilter === 'blockers') return item.type === 'blocker';
-    if (selectedFilter === 'decisions') return item.type === 'decision';
-    if (selectedFilter === 'code') return item.type === 'code';
-    return true;
+  const filteredEvents = timelineEvents.filter((evt) => {
+    if (activeFilter === 'all') return true;
+    return evt.type === activeFilter;
   });
 
   return (
-    <div className="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-6 pb-32">
-      {/* Editorial Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-outline-variant/20">
+    <div className="space-y-6 max-w-6xl mx-auto w-full pb-32 animate-fade-in">
+      {/* Header matching Changes reference */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-low border border-outline-variant/40 mb-3">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="font-mono text-xs uppercase tracking-wider text-primary font-semibold">
-              Signature Feature · Live Telemetry
-            </span>
-          </div>
-          <h1 className="font-display text-3xl sm:text-4xl text-on-surface font-semibold tracking-tight">
-            Change Radar
-          </h1>
-          <p className="font-body text-sm sm:text-base text-on-surface-variant mt-1 max-w-2xl font-light">
-            Continuous detection of project changes, status drift, pull request updates, and pending decisions across your connected workspace conduits.
+          <h1 className="text-2xl font-semibold text-slate-900 tracking-tight">Changes</h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Track important changes across your connected sources.
           </p>
         </div>
 
-        {/* Quick Filter Pills & Demo State Toggle */}
-        <div className="flex items-center flex-wrap gap-2">
-          <button
-            onClick={() => setSelectedFilter('all')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-all cursor-pointer ${
-              selectedFilter === 'all'
-                ? 'bg-primary text-on-primary font-semibold shadow-xs'
-                : 'bg-surface-container border border-outline-variant/30 text-on-surface-variant hover:text-on-surface'
-            }`}
-          >
-            All Changes ({radarEvents.length})
+        {/* Right side filter controls */}
+        <div className="flex items-center gap-2.5">
+          <button className="bg-white border border-slate-200/90 hover:bg-slate-50 text-xs font-medium text-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer">
+            <span>{selectedRange}</span>
+            <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
           </button>
-          <button
-            onClick={() => setSelectedFilter('blockers')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-all cursor-pointer ${
-              selectedFilter === 'blockers'
-                ? 'bg-primary text-on-primary font-semibold shadow-xs'
-                : 'bg-surface-container border border-outline-variant/30 text-on-surface-variant hover:text-on-surface'
-            }`}
-          >
-            Blockers
-          </button>
-          <button
-            onClick={() => setSelectedFilter('decisions')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-all cursor-pointer ${
-              selectedFilter === 'decisions'
-                ? 'bg-primary text-on-primary font-semibold shadow-xs'
-                : 'bg-surface-container border border-outline-variant/30 text-on-surface-variant hover:text-on-surface'
-            }`}
-          >
-            Decisions
-          </button>
-          <button
-            onClick={() => setSelectedFilter('code')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-all cursor-pointer ${
-              selectedFilter === 'code'
-                ? 'bg-primary text-on-primary font-semibold shadow-xs'
-                : 'bg-surface-container border border-outline-variant/30 text-on-surface-variant hover:text-on-surface'
-            }`}
-          >
-            Code & PRs
+
+          <button className="bg-white border border-slate-200/90 hover:bg-slate-50 text-xs font-medium text-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer">
+            <Filter className="w-3.5 h-3.5 text-slate-400" />
+            <span>Filters</span>
           </button>
         </div>
       </div>
 
-      {/* Snapshot Delta Overview Bar */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="rounded-xl bg-surface-container-lowest hairline-border p-4 shadow-sm flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
-              isOpenBlocker ? 'bg-error-container/30 text-error' : 'bg-primary/20 text-primary'
-            }`}>
-              {isOpenBlocker ? <AlertTriangle className="w-5 h-5" /> : <CheckCircle2 className="w-5 h-5" />}
-            </div>
-            <div>
-              <div className="text-[11px] font-mono text-on-surface-variant uppercase tracking-wider">
-                Release Blockers
-              </div>
-              <div className="text-xl font-headline font-semibold text-on-surface">
-                {isOpenBlocker ? '1 Active' : '0 Active (Clear)'}
-              </div>
-            </div>
-          </div>
-          <button
-            onClick={onToggleDemoState}
-            className="text-xs font-mono px-2.5 py-1 rounded-md bg-surface-container hover:bg-surface-container-high text-primary border border-outline-variant/30 transition-all cursor-pointer"
-          >
-            Toggle State
-          </button>
-        </div>
-
-        <div className="rounded-xl bg-surface-container-lowest hairline-border p-4 shadow-sm flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-secondary-container flex items-center justify-center text-secondary">
-            <Mail className="w-5 h-5" />
-          </div>
-          <div>
-            <div className="text-[11px] font-mono text-on-surface-variant uppercase tracking-wider">
-              Pending Decisions
-            </div>
-            <div className="text-xl font-headline font-semibold text-on-surface">
-              {isOpenBlocker ? '1 Pending' : '1 Sign-off Ready'}
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-xl bg-surface-container-lowest hairline-border p-4 shadow-sm flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-surface-container-high flex items-center justify-center text-primary">
-            <GitPullRequest className="w-5 h-5" />
-          </div>
-          <div>
-            <div className="text-[11px] font-mono text-on-surface-variant uppercase tracking-wider">
-              Active Pull Requests
-            </div>
-            <div className="text-xl font-headline font-semibold text-on-surface">
-              PR #342 (Diff Ready)
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Changes Feed Cards */}
-      <div className="flex flex-col gap-4">
-        {filteredEvents.map((event) => {
-          const isCritical = event.severity === 'critical';
-          const isResolved = event.severity === 'resolved';
-
+      {/* Filter Pills */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1">
+        {filterTabs.map((tab) => {
+          const isActive = activeFilter === tab.id;
           return (
-            <div
-              key={event.id}
-              className={`rounded-2xl bg-surface-container-lowest p-5 sm:p-6 transition-all shadow-md relative overflow-hidden ${
-                isCritical
-                  ? 'border border-error-container/60 shadow-error-container/10'
-                  : 'hairline-border hover:border-outline-variant/50'
+            <button
+              key={tab.id}
+              onClick={() => setActiveFilter(tab.id)}
+              className={`px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
+                isActive
+                  ? 'bg-slate-900 text-white shadow-xs'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70 hover:text-slate-900'
               }`}
             >
-              {/* Critical Accent Glow */}
-              {isCritical && (
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-error-container via-error to-error-container" />
-              )}
-
-              <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
-                {/* Event Details */}
-                <div className="flex-1 flex flex-col gap-2.5">
-                  <div className="flex items-center flex-wrap gap-2 text-xs font-mono">
-                    <span
-                      className={`px-2 py-0.5 rounded-md font-semibold uppercase text-[10px] tracking-wider ${
-                        isCritical
-                          ? 'bg-error-container text-on-error'
-                          : isResolved
-                          ? 'bg-primary/20 text-primary border border-primary/40'
-                          : 'bg-surface-container-high text-on-surface-variant border border-outline-variant/30'
-                      }`}
-                    >
-                      {event.category}
-                    </span>
-
-                    <span className="text-on-surface-variant/60 flex items-center gap-1">
-                      <Clock className="w-3 h-3" />
-                      {event.timestamp}
-                    </span>
-
-                    <span className="text-outline-variant">·</span>
-
-                    <span className="text-on-surface-variant/80">
-                      Blast Radius: <strong className="text-on-surface font-medium">{event.blastRadius}</strong>
-                    </span>
-                  </div>
-
-                  <h3 className="font-headline text-lg sm:text-xl text-on-surface font-semibold">
-                    {event.title}
-                  </h3>
-
-                  <p className="font-body text-sm text-on-surface-variant/90 leading-relaxed font-light">
-                    {event.summary}
-                  </p>
-
-                  {/* Previous vs Current State Delta Pill */}
-                  <div className="flex items-center flex-wrap gap-3 p-3 rounded-xl bg-surface-container-low border border-outline-variant/20 text-xs font-mono">
-                    <div className="flex items-center gap-1.5 text-on-surface-variant/70">
-                      <span className="text-[10px] uppercase tracking-wider text-outline">Earlier:</span>
-                      <span className="line-through">{event.previousState}</span>
-                    </div>
-                    <ArrowRight className="w-3.5 h-3.5 text-primary" />
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] uppercase tracking-wider text-outline">Now:</span>
-                      <span className={isCritical ? 'text-error font-semibold' : 'text-primary font-medium'}>
-                        {event.currentState}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right Action Buttons */}
-                <div className="flex lg:flex-col items-center lg:items-end justify-between sm:justify-start gap-2 pt-2 lg:pt-0 shrink-0">
-                  <button
-                    onClick={() => onSynthesizeInChat(event.actionQuery)}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary hover:bg-primary-fixed text-on-primary font-body text-xs font-semibold shadow-xs transition-all active:scale-95 cursor-pointer"
-                  >
-                    <Sparkles className="w-3.5 h-3.5" />
-                    <span>Analyze in Chat</span>
-                  </button>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => onInspectEvidence(event.evidenceId)}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface text-xs font-mono border border-outline-variant/30 transition-all cursor-pointer"
-                      title="Inspect citation snippet"
-                    >
-                      <span>Evidence</span>
-                      <ChevronRight className="w-3.5 h-3.5" />
-                    </button>
-
-                    {event.url && (
-                      <a
-                        href={event.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="p-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface border border-outline-variant/30 transition-all"
-                        title="Open external source"
-                      >
-                        <ExternalLink className="w-3.5 h-3.5" />
-                      </a>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
+              {tab.label}
+            </button>
           );
         })}
       </div>
-    </div>
+
+      {/* Main Grid: Left Column Timeline + Right Column Summaries */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Left Column: Timeline (8 cols) */}
+          <div className="lg:col-span-8 space-y-4">
+            <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider pl-1">
+              Today
+            </div>
+
+            <div className="space-y-3">
+              {filteredEvents.map((event) => {
+                const Icon = event.icon;
+
+                return (
+                  <div
+                    key={event.id}
+                    className="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-xs hover:border-slate-300 hover:shadow-sm transition-all flex items-start gap-3.5 group"
+                  >
+                    {/* Avatar / Icon Badge */}
+                    <div className="shrink-0 mt-0.5">
+                      {event.avatar ? (
+                        <img
+                          src={event.avatar}
+                          alt={event.author}
+                          className="w-9 h-9 rounded-full object-cover ring-1 ring-slate-200"
+                        />
+                      ) : event.avatarText ? (
+                        <div
+                          className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs ${event.avatarBg}`}
+                        >
+                          {event.avatarText}
+                        </div>
+                      ) : (
+                        <div
+                          className={`w-9 h-9 rounded-full flex items-center justify-center border ${event.iconBadge}`}
+                        >
+                          {Icon && <Icon className="w-4 h-4" />}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="text-sm text-slate-800 leading-snug">
+                          {event.title}
+                        </div>
+                        {onSynthesizeInChat && (
+                          <button
+                            onClick={() => onSynthesizeInChat(event.actionQuery)}
+                            className="opacity-0 group-hover:opacity-100 text-[11px] font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-opacity cursor-pointer shrink-0"
+                            title="Ask PulseDesk about this change"
+                          >
+                            <span>Analyze</span>
+                            <ArrowRight className="w-3 h-3" />
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="text-xs text-slate-500 mt-0.5 truncate">
+                        {event.subtitle}
+                      </div>
+
+                      {/* Metadata Row */}
+                      <div className="flex items-center gap-2 mt-2.5 text-[11px] text-slate-400 font-mono">
+                        <span className="bg-slate-50 px-1.5 py-0.5 rounded border border-slate-200 text-slate-600">
+                          {event.tag}
+                        </span>
+                        <span>•</span>
+                        <span className="font-sans text-slate-400">{event.time}</span>
+                        <span>•</span>
+                        <span
+                          className={`px-2 py-0.5 rounded-full font-sans font-medium text-[10px] border ${event.sourceBadge}`}
+                        >
+                          {event.source}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Right Column: Change Summary & Top Contributors (4 cols) */}
+          <div className="lg:col-span-4 space-y-5">
+            {/* Change Summary Card */}
+            <div className="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-xs">
+              <h2 className="text-sm font-semibold text-slate-900 tracking-tight">
+                Change Summary (7d)
+              </h2>
+
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div className="p-3 rounded-xl bg-slate-50/70 border border-slate-100">
+                  <div className="text-2xl font-bold text-slate-900">24</div>
+                  <div className="text-xs text-slate-500 mt-0.5">Commits</div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-50/70 border border-slate-100">
+                  <div className="text-2xl font-bold text-slate-900">8</div>
+                  <div className="text-xs text-slate-500 mt-0.5">Pull Requests</div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-50/70 border border-slate-100">
+                  <div className="text-2xl font-bold text-slate-900">12</div>
+                  <div className="text-xs text-slate-500 mt-0.5">Issues</div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-50/70 border border-slate-100">
+                  <div className="text-2xl font-bold text-slate-900">16</div>
+                  <div className="text-xs text-slate-500 mt-0.5">Emails</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Top Contributors Card */}
+            <div className="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-xs">
+              <h2 className="text-sm font-semibold text-slate-900 tracking-tight">
+                Top Contributors
+              </h2>
+
+              <div className="mt-4 space-y-3.5">
+                {[
+                  {
+                    name: 'alex',
+                    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=64&h=64&fit=crop&crop=face',
+                    commits: '12 commits',
+                  },
+                  {
+                    name: 'you',
+                    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=64&h=64&fit=crop&crop=face',
+                    commits: '8 commits',
+                  },
+                  {
+                    name: 'ephraim',
+                    avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=64&h=64&fit=crop&crop=face',
+                    commits: '4 commits',
+                  },
+                  {
+                    name: 'others',
+                    initial: '+',
+                    commits: '6 commits',
+                  },
+                ].map((c) => (
+                  <div key={c.name} className="flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      {c.avatar ? (
+                        <img
+                          src={c.avatar}
+                          alt={c.name}
+                          className="w-7 h-7 rounded-full object-cover ring-1 ring-slate-200"
+                        />
+                      ) : (
+                        <div className="w-7 h-7 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-semibold">
+                          {c.initial}
+                        </div>
+                      )}
+                      <span className="text-xs font-medium text-slate-800">{c.name}</span>
+                    </div>
+                    <span className="text-xs text-slate-400 font-mono">{c.commits}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
   );
 };
-

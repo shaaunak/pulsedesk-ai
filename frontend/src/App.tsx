@@ -9,6 +9,7 @@ import { MemoryView } from './components/MemoryView';
 import { ActivityView } from './components/ActivityView';
 import { SettingsView } from './components/SettingsView';
 import { ConnectionsView } from './components/ConnectionsView';
+import { ProjectsView } from './components/ProjectsView';
 import { CommandConsole } from './components/CommandConsole';
 import { EvidenceModal } from './components/EvidenceModal';
 import { DemoControlModal } from './components/DemoControlModal';
@@ -57,6 +58,7 @@ export function App() {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState<boolean>(false);
   const [isAuditLogModalOpen, setIsAuditLogModalOpen] = useState<boolean>(false);
   const [isExportBriefingOpen, setIsExportBriefingOpen] = useState<boolean>(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
   // Initialize data on mount
   useEffect(() => {
@@ -238,8 +240,8 @@ export function App() {
   };
 
   return (
-    <div className="bg-background text-on-surface antialiased overflow-x-hidden min-h-screen selection:bg-primary-container selection:text-on-primary-container font-body">
-      {/* 1. Fixed Left Navigation Rail (68-72px, w-18) */}
+    <div className="bg-slate-50 text-slate-900 antialiased overflow-x-hidden min-h-screen selection:bg-blue-100 selection:text-blue-900 font-sans">
+      {/* 1. Fixed Left Navigation Rail (240px, w-60) */}
       <SideNavBar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -249,6 +251,8 @@ export function App() {
         }}
         isDemoMode={isDemoMode}
         onOpenDemoControls={() => setIsDemoModalOpen(true)}
+        mobileOpen={mobileMenuOpen}
+        onCloseMobile={() => setMobileMenuOpen(false)}
       />
 
       {/* 2. Fixed Top Navigation Bar */}
@@ -264,10 +268,11 @@ export function App() {
         isDemoMode={isDemoMode}
         issue42State={issue42State}
         onToggleDemoState={handleToggleDemoState}
+        onToggleMobileMenu={() => setMobileMenuOpen(!mobileMenuOpen)}
       />
 
-      {/* 3. Main Workspace Viewport (Offset left by 72px for rail on desktop, top 64px for topbar) */}
-      <main className="ml-0 md:ml-18 mt-16 min-h-[calc(100vh-4rem)] p-4 sm:p-6 lg:p-8 flex flex-col gap-6">
+      {/* 3. Main Workspace Viewport (Offset left by 240px / md:ml-60, top 64px + 16px buffer = pt-20) */}
+      <main className="ml-0 md:ml-60 pt-20 px-4 sm:px-6 lg:px-8 pb-12 min-h-screen flex flex-col gap-6 bg-slate-50">
         {/* Screen 1: Overview Dashboard */}
         {activeTab === 'overview' && (
           <DashboardView
@@ -282,28 +287,17 @@ export function App() {
             }}
             onInspectEvidence={handleSelectCitation}
             onOpenExportBriefing={() => setIsExportBriefingOpen(true)}
-            onNavigateToRadar={() => setActiveTab('radar')}
+            onNavigateToTab={(tab) => setActiveTab(tab)}
+            onRunPrompt={(prompt) => {
+              setActiveTab('ask');
+              handleSendMessage(prompt);
+            }}
           />
-        )}
-
-        {/* Screen: Change Radar (Signature Feature) */}
-        {activeTab === 'radar' && (
-          <div className="-m-4 sm:-m-6 lg:-m-8 flex-1 flex flex-col">
-            <ChangeRadarView
-              issue42State={issue42State}
-              onInspectEvidence={handleSelectCitation}
-              onSynthesizeInChat={(prompt) => {
-                setActiveTab('ask');
-                handleSendMessage(prompt);
-              }}
-              onToggleDemoState={handleToggleDemoState}
-            />
-          </div>
         )}
 
         {/* Screen 2: Ask PulseDesk (Conversational Intelligence Workspace with Source Inspector) */}
         {activeTab === 'ask' && (
-          <div className="flex-1 flex overflow-hidden -m-6 lg:-m-8">
+          <div className="flex-1 flex overflow-hidden -mx-4 sm:-mx-6 lg:-mx-8 -mt-4 -mb-12 h-[calc(100vh-5rem)]">
             <IntelligenceWorkspace
               messages={messages}
               isLoading={isLoading}
@@ -322,9 +316,64 @@ export function App() {
           </div>
         )}
 
-        {/* Screen 3: Full-Scale Living Topology View */}
+        {/* Screen 3: Projects Screen */}
+        {activeTab === 'projects' && (
+          <ProjectsView
+            onSelectProject={(projectId) => {
+              setActiveTab('overview');
+            }}
+            onOpenCreateModal={() => {}}
+          />
+        )}
+
+        {/* Screen 4: Sources (Connections Center) */}
+        {(activeTab === 'sources' || activeTab === 'connections') && (
+          <ConnectionsView
+            connections={connections}
+            onToggleConnection={handleToggleConnection}
+          />
+        )}
+
+        {/* Screen 5: Changes Timeline (Signature Feature) */}
+        {(activeTab === 'changes' || activeTab === 'radar') && (
+          <ChangeRadarView
+            issue42State={issue42State}
+            onInspectEvidence={handleSelectCitation}
+            onSynthesizeInChat={(prompt) => {
+              setActiveTab('ask');
+              handleSendMessage(prompt);
+            }}
+            onToggleDemoState={handleToggleDemoState}
+          />
+        )}
+
+        {/* Screen 6: Memory Studio */}
+        {activeTab === 'memory' && (
+          <MemoryView
+            memories={memories}
+            conversations={conversations}
+            onCreateMemory={handleCreateMemory}
+            onUpdateMemory={handleUpdateMemory}
+            onDeleteMemory={handleDeleteMemory}
+            onSelectConversation={(convId) => {
+              const found = conversations.find((c) => c.id === convId);
+              if (found) {
+                setActiveConversationId(found.id);
+                setMessages(found.messages);
+                setActiveTab('ask');
+              }
+            }}
+          />
+        )}
+
+        {/* Screen 7: Agent Activity Stream */}
+        {(activeTab === 'activity' || activeTab === 'stream') && (
+          <ActivityView />
+        )}
+
+        {/* Screen 8: Full-Scale Living Topology View */}
         {activeTab === 'topology' && (
-          <div className="-m-6 lg:-m-8 flex-1 flex flex-col">
+          <div className="-m-4 sm:-m-6 lg:-m-8 flex-1 flex flex-col">
             <TopologyView
               issue42State={issue42State}
               onInspectEvidence={handleSelectCitation}
@@ -332,47 +381,9 @@ export function App() {
           </div>
         )}
 
-        {/* Screen 4: Intelligence Stream View */}
-        {activeTab === 'stream' && (
-          <div className="flex-1 max-w-5xl w-full mx-auto pb-28">
-            <ActivityView />
-          </div>
-        )}
-
-        {/* Screen 5: Memory Studio */}
-        {activeTab === 'memory' && (
-          <div className="-m-6 lg:-m-8 flex-1 flex flex-col">
-            <MemoryView
-              memories={memories}
-              conversations={conversations}
-              onCreateMemory={handleCreateMemory}
-              onUpdateMemory={handleUpdateMemory}
-              onDeleteMemory={handleDeleteMemory}
-              onSelectConversation={(convId) => {
-                const found = conversations.find((c) => c.id === convId);
-                if (found) {
-                  setActiveConversationId(found.id);
-                  setMessages(found.messages);
-                  setActiveTab('ask');
-                }
-              }}
-            />
-          </div>
-        )}
-
-        {/* Screen 6: Connections Center */}
-        {activeTab === 'connections' && (
-          <div className="-m-6 lg:-m-8 flex-1 flex flex-col">
-            <ConnectionsView
-              connections={connections}
-              onToggleConnection={handleToggleConnection}
-            />
-          </div>
-        )}
-
-        {/* Screen 7: Settings */}
+        {/* Screen 9: Settings */}
         {activeTab === 'settings' && (
-          <div className="-m-6 lg:-m-8 flex-1 flex flex-col">
+          <div className="-m-4 sm:-m-6 lg:-m-8 flex-1 flex flex-col">
             <SettingsView />
           </div>
         )}

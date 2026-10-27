@@ -44,35 +44,52 @@ Conventional RAG applications fail in dynamic workplace environments. They opera
 ## Visual Interface Gallery
 
 ### 1. Workspace Intelligence Overview
-> High-density executive console showing live release blockers, 30 FPS dependency topology, real-time KPI metrics, and an integrated AI command console.
+> High-density executive console showing live release blockers, 4 real-time status metric cards, suggested next actions, project health trends, and docked AI command console.
 
 <div align="center">
-  <img src="docs/assets/overview.png" alt="PulseDesk AI Overview Dashboard" width="100%" />
+  <img src="docs/assets/01_pulsedesk_overview_desktop.png" alt="PulseDesk AI Overview Dashboard" width="100%" />
 </div>
 
 <br/>
 
-### 2. Conversational Intelligence & Citation Verification
-> Multi-turn conversational interface with grounded citation chips, inspectable execution steps, and live source evidence sidepanel.
+### 2. Conversational Intelligence & Grounded Citation Verification
+> Multi-turn conversational interface with interactive citation chips, grounded claim verification, follow-up prompt pills, and live source evidence inspector.
 
 <div align="center">
-  <img src="docs/assets/ask_assistant.png" alt="PulseDesk Conversational Assistant" width="100%" />
+  <img src="docs/assets/02_pulsedesk_ask_intelligence.png" alt="PulseDesk Conversational Assistant" width="100%" />
 </div>
 
 <br/>
 
-### 3. Change Radar & Connections Architecture
-
+### 3. Multi-Project Hub & Connected Sources
 <div align="center">
   <table>
     <tr>
       <td width="50%">
-        <img src="docs/assets/change_radar.png" alt="Change Radar View" />
-        <p align="center"><b>Change Radar:</b> Continuous detection of state drift, PR diffs &amp; blast radius.</p>
+        <img src="docs/assets/03_pulsedesk_projects.png" alt="Multi-Project Hub" />
+        <p align="center"><b>Multi-Project Hub:</b> Explore connected workspaces with active issue, PR, and blocker counts.</p>
       </td>
       <td width="50%">
-        <img src="docs/assets/connections.png" alt="Connections Architecture" />
-        <p align="center"><b>Connections Center:</b> Dual execution modes (Deterministic Fixtures vs Live MCP).</p>
+        <img src="docs/assets/04_pulsedesk_sources.png" alt="Sources Center" />
+        <p align="center"><b>Sources Center:</b> Strict read-only conduits for GitHub (MCP 2.x), Gmail, Linear, Notion, and Slack.</p>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<br/>
+
+### 4. Change Radar & Responsive Mobile Interface
+<div align="center">
+  <table>
+    <tr>
+      <td width="65%">
+        <img src="docs/assets/05_pulsedesk_changes.png" alt="Change Radar Timeline" />
+        <p align="center"><b>Change Radar:</b> 7-day temporal diffing across commits, PRs, issues, emails, and deployments.</p>
+      </td>
+      <td width="35%">
+        <img src="docs/assets/06_pulsedesk_mobile_overview.png" alt="Mobile Overview" />
+        <p align="center"><b>Mobile Viewport:</b> Responsive drawer navigation and optimized touch controls (390×844).</p>
       </td>
     </tr>
   </table>
