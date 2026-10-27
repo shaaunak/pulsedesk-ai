@@ -267,3 +267,4 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
   );
 };
 export default ProjectsView;
+

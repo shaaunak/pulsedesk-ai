@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Bell, ChevronDown, RefreshCw, Menu } from 'lucide-react';
+import { Search, Bell, ChevronDown, RefreshCw, Menu, FileText } from 'lucide-react';
 import { Connection } from '../types';
 
 interface TopNavBarProps {
@@ -12,6 +12,7 @@ interface TopNavBarProps {
   issue42State: string;
   onToggleDemoState: () => void;
   onToggleMobileMenu?: () => void;
+  onOpenExportBriefing?: () => void;
 }
 
 export const TopNavBar: React.FC<TopNavBarProps> = ({
@@ -24,6 +25,7 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
   issue42State,
   onToggleDemoState,
   onToggleMobileMenu,
+  onOpenExportBriefing,
 }) => {
   const isOpenBlocker = issue42State === 'open';
 
@@ -73,8 +75,20 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
           </div>
         </div>
 
-        {/* Right Side: Search, Notifications, Avatar */}
+        {/* Right Side: Export Briefing, Search, Notifications, Avatar */}
         <div className="flex items-center gap-3">
+          {/* Export Briefing Button */}
+          {onOpenExportBriefing && (
+            <button
+              onClick={onOpenExportBriefing}
+              className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200/90 bg-white hover:bg-slate-50 text-slate-700 transition-colors text-xs font-medium cursor-pointer shadow-2xs"
+              title="Export Executive Status Report"
+            >
+              <FileText className="w-3.5 h-3.5 text-blue-600" />
+              <span>Export Briefing</span>
+            </button>
+          )}
+
           {/* Search bar */}
           <button
             onClick={onOpenSearch}

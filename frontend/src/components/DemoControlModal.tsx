@@ -21,115 +21,84 @@ export const DemoControlModal: React.FC<DemoControlModalProps> = ({
   const isOpenState = issue42State === 'open';
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-surface-container-low rounded-2xl max-w-lg w-full hairline-border-strong shadow-2xl shadow-black/80 overflow-hidden animate-in fade-in duration-150">
+    <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl max-w-lg w-full border border-slate-200 shadow-2xl overflow-hidden animate-in fade-in duration-150">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-outline-variant/30 flex items-center justify-between bg-surface-container-lowest">
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-primary-container animate-pulse" />
-            <h3 className="font-headline text-sm font-semibold text-on-surface">Recruiter Demo Controller</h3>
+        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+          <div className="flex items-center gap-2.5">
+            <span className={`w-2.5 h-2.5 rounded-full ${isOpenState ? 'bg-red-500 animate-pulse' : 'bg-emerald-500'}`} />
+            <h3 className="text-sm font-semibold text-slate-900">Demo Controller</h3>
           </div>
           <button
             onClick={onClose}
-            className="w-7 h-7 rounded-lg hover:bg-surface-container flex items-center justify-center text-on-surface-variant transition-colors"
+            className="w-7 h-7 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-5 text-xs text-on-surface font-body">
-          <div className="p-4 rounded-xl bg-primary-container/15 border border-primary-container/30 text-xs">
-            <div className="font-semibold text-primary flex items-center gap-1.5 mb-1 font-headline">
+        <div className="p-6 space-y-5 text-xs text-slate-700">
+          <div className="p-4 rounded-xl bg-blue-50/70 border border-blue-100 text-xs">
+            <div className="font-semibold text-blue-700 flex items-center gap-1.5 mb-1">
               <Sparkles className="w-4 h-4" />
               <span>Evidence-Grounding Verification Story</span>
             </div>
-            <p className="text-on-surface-variant leading-relaxed">
+            <p className="text-slate-600 leading-relaxed">
               PulseDesk does not hallucinate static answers. Toggle GitHub Issue #42 from{' '}
-              <strong className="text-white font-semibold">OPEN</strong> to{' '}
-              <strong className="text-white font-semibold">CLOSED</strong> below to watch the LangGraph
+              <strong className="text-slate-900 font-semibold">OPEN</strong> to{' '}
+              <strong className="text-slate-900 font-semibold">CLOSED</strong> below to watch the LangGraph
               agent discover the change, re-evaluate blockers, and adapt its priorities live!
             </p>
           </div>
 
           {/* Current State Card */}
-          <div className="p-4 rounded-xl hairline-border bg-surface-container flex items-center justify-between">
+          <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between">
             <div>
-              <div className="text-[10px] uppercase font-semibold text-outline tracking-wider font-mono">
+              <div className="text-[10px] uppercase font-semibold text-slate-400 tracking-wider font-mono">
                 GitHub Issue #42 Status
               </div>
-              <div className="font-headline text-sm font-bold text-on-surface mt-0.5 flex items-center gap-2">
-                <span>Release CI pipeline failing</span>
-                <span
-                  className={`text-[10px] px-2 py-0.5 rounded-full font-mono uppercase font-semibold ${
-                    isOpenState
-                      ? 'bg-primary-container text-on-primary-container'
-                      : 'bg-tertiary-container text-on-tertiary-container'
-                  }`}
-                >
-                  {issue42State}
-                </span>
+              <div className="flex items-center gap-2 mt-1">
+                {isOpenState ? (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700">
+                    <AlertTriangle className="w-3 h-3" />
+                    Open (Blocking Release)
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">
+                    <CheckCircle2 className="w-3 h-3" />
+                    Resolved (Closed & Verified)
+                  </span>
+                )}
               </div>
             </div>
 
             <button
               onClick={onToggleIssue42}
-              className="px-3.5 py-2 rounded-lg bg-primary-container text-on-primary-container hover:bg-inverse-primary transition-colors font-medium text-xs flex items-center gap-1.5 shadow-md font-body cursor-pointer"
+              className="px-3.5 py-2 rounded-xl border border-slate-300 hover:bg-white text-xs font-semibold text-slate-700 transition-colors flex items-center gap-1.5 shadow-2xs cursor-pointer"
             >
-              <RefreshCw className="w-3.5 h-3.5" />
-              <span>Toggle to {isOpenState ? 'CLOSED' : 'OPEN'}</span>
+              <RefreshCw className="w-3.5 h-3.5 text-blue-600" />
+              <span>Toggle State</span>
             </button>
           </div>
 
-          {/* Two-step Walkthrough */}
-          <div className="space-y-2 font-mono">
-            <div className="text-[10px] uppercase font-semibold text-outline tracking-wider">
-              Verification Steps
-            </div>
-
-            <div className="p-3 rounded-lg hairline-border bg-surface-container-lowest flex items-start gap-2.5">
-              <span className="w-5 h-5 rounded-full bg-surface-container text-primary font-bold flex items-center justify-center shrink-0 text-[11px]">
-                1
-              </span>
-              <div className="font-body text-xs">
-                <div className="font-semibold text-on-surface">When Issue #42 is OPEN:</div>
-                <div className="text-on-surface-variant mt-0.5">
-                  Agent detects release blocker, warns <em>"Release at risk"</em>, and recommends fixing
-                  the reopened CI pipeline before staging sign-off.
-                </div>
-              </div>
-            </div>
-
-            <div className="p-3 rounded-lg hairline-border bg-surface-container-lowest flex items-start gap-2.5">
-              <span className="w-5 h-5 rounded-full bg-surface-container text-tertiary font-bold flex items-center justify-center shrink-0 text-[11px]">
-                2
-              </span>
-              <div className="font-body text-xs">
-                <div className="font-semibold text-on-surface">When Issue #42 is CLOSED:</div>
-                <div className="text-on-surface-variant mt-0.5">
-                  Agent detects CI is passing, announces <em>"Release blocker resolved"</em>, and
-                  unblocks the request for staging sign-off!
-                </div>
-              </div>
-            </div>
+          {/* Preset Recruiter Query CTA */}
+          <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+            <span className="text-[11px] text-slate-400">Click to execute test query in Chat:</span>
+            <button
+              onClick={() => {
+                onRunDemoQuery();
+                onClose();
+              }}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold transition-all shadow-xs cursor-pointer"
+            >
+              <span>Run Verification Query</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
           </div>
-        </div>
-
-        {/* Footer */}
-        <div className="px-6 py-3.5 bg-surface-container-lowest border-t border-outline-variant/30 flex items-center justify-between">
-          <span className="text-[11px] text-outline font-mono">Synthetic reproducible scenario</span>
-          <button
-            onClick={() => {
-              onRunDemoQuery();
-              onClose();
-            }}
-            className="px-4 py-2 rounded-lg bg-on-surface text-surface hover:bg-white transition-colors font-semibold text-xs flex items-center gap-1.5 shadow-md cursor-pointer font-body"
-          >
-            <span>Run Blocker Query</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
         </div>
       </div>
     </div>
   );
 };
+export default DemoControlModal;

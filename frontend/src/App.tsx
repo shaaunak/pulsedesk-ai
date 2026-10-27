@@ -269,6 +269,7 @@ export function App() {
         issue42State={issue42State}
         onToggleDemoState={handleToggleDemoState}
         onToggleMobileMenu={() => setMobileMenuOpen(!mobileMenuOpen)}
+        onOpenExportBriefing={() => setIsExportBriefingOpen(true)}
       />
 
       {/* 3. Main Workspace Viewport (Offset left by 240px / md:ml-60, top 64px + 16px buffer = pt-20) */}

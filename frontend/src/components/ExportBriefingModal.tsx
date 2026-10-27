@@ -58,19 +58,16 @@ ${
   - **Decision Mandate:** "Zero tolerance for unverified signature handshakes during the 30-minute transition."
 
 ## 4. Code Changes & Diffs
-- **PR #342 (Diff in webhook.rb):**
-  - **Metrics:** +142 / -38 lines changed across \`webhook.rb\` and \`webhook_spec.rb\`.
-  - **Author:** @alex-lead
-  - **Validation:** 28/28 assertions verified in staging test runner #2948-Alpha.
+- **Pull Request #342:** Fix Stripe webhook HMAC signature calculation (+142 / -38 lines)
+- **Status:** Awaiting code review by core team
+- **Evidence Citation:** [fixture:github:pr-342] https://github.com/pulsedesk/project-alpha/pull/342
 
-## 5. Recommended Priority Sequence
-1. ${isOpenBlocker ? 'Merge & verify PR #342 in staging cluster #4 [fixture:github:42]' : 'Trigger staging demo deployment pipeline [fixture:github:42]'}
-2. ${isOpenBlocker ? 'Submit green test trace to VP Finance for sign-off [fixture:gmail:approval-1]' : 'Collect formal staging sign-off from VP Finance [fixture:gmail:approval-1]'}
-3. Continue enhancement on accessibility labels (Issue #47) [fixture:github:47]
+## 5. Strategic Context & Priorities
+- **Recorded Fact:** Project Alpha presentation is top priority before Friday.
+- **Provenance:** Explicit user priority recorded in Durable Memory Store.
 
 ---
-*Report synthesized autonomously by PulseDesk AI. All claims verified against connected GitHub MCP and Gmail conduits.*
-`;
+*Report generated autonomously by PulseDesk AI workspace engine with cryptographic evidence hashing.*`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(markdownContent);
@@ -79,46 +76,42 @@ ${
   };
 
   const handleDownload = () => {
-    const blob = new Blob([markdownContent], { type: 'text/markdown;charset=utf-8' });
+    const blob = new Blob([markdownContent], { type: 'text/markdown' });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `PulseDesk_Briefing_Project_Alpha_${Date.now()}.md`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `PulseDesk_Briefing_Alpha_${Date.now()}.md`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
 
   return (
-    <div
-      onClick={onClose}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn"
-    >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-3xl rounded-2xl bg-surface-container-lowest hairline-border-strong shadow-2xl p-6 sm:p-8 flex flex-col gap-5 max-h-[90vh]"
-      >
+    <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[85vh] border border-slate-200 shadow-2xl overflow-hidden flex flex-col p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="flex items-start justify-between border-b border-outline-variant/20 pb-4">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
               <FileText className="w-5 h-5" />
             </div>
             <div>
-              <div className="inline-flex items-center gap-1.5 text-xs font-mono text-primary uppercase tracking-wider mb-0.5">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Executive Briefing Export</span>
+              <div className="flex items-center gap-2">
+                <h3 className="font-semibold text-slate-900 text-base">Export Executive Briefing</h3>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-blue-50 text-blue-700 border border-blue-100">
+                  Markdown · Grounded
+                </span>
               </div>
-              <h2 className="font-headline text-lg sm:text-xl font-semibold text-on-surface">
-                Project Alpha Briefing Report
-              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Ready-to-share status report with verified citations, root causes, and blast radius.
+              </p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -126,37 +119,37 @@ ${
 
         {/* Report Preview */}
         <div className="flex-1 overflow-hidden flex flex-col">
-          <div className="flex items-center justify-between text-xs font-mono text-on-surface-variant mb-2">
+          <div className="flex items-center justify-between text-xs font-mono text-slate-500 mb-2">
             <span>Markdown Preview · Verified Citations Included</span>
-            <span className="flex items-center gap-1 text-primary">
+            <span className="flex items-center gap-1 text-emerald-600">
               <ShieldCheck className="w-3.5 h-3.5" />
               <span>Grounded Evidence</span>
             </span>
           </div>
 
-          <pre className="flex-1 overflow-y-auto p-4 rounded-xl bg-surface-container-low hairline-border font-mono text-xs text-on-surface/90 leading-relaxed custom-scroll whitespace-pre-wrap select-text">
+          <pre className="flex-1 overflow-y-auto p-4 rounded-xl bg-slate-50 border border-slate-200 font-mono text-xs text-slate-800 leading-relaxed whitespace-pre-wrap select-text">
             {markdownContent}
           </pre>
         </div>
 
         {/* Footer CTAs */}
-        <div className="flex items-center justify-between gap-3 pt-2 border-t border-outline-variant/20 flex-wrap">
-          <div className="text-[11px] font-mono text-on-surface-variant/70">
+        <div className="flex items-center justify-between gap-3 pt-2 border-t border-slate-100 flex-wrap">
+          <div className="text-[11px] text-slate-400">
             Export ready · Safe for external stakeholder sharing
           </div>
 
           <div className="flex items-center gap-2.5">
             <button
               onClick={handleCopy}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-body text-xs font-medium border border-outline-variant/30 transition-all cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 font-medium text-xs border border-slate-200 shadow-2xs transition-all cursor-pointer"
             >
-              {copied ? <Check className="w-3.5 h-3.5 text-primary" /> : <Copy className="w-3.5 h-3.5" />}
+              {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copied ? 'Copied to Clipboard' : 'Copy Markdown'}</span>
             </button>
 
             <button
               onClick={handleDownload}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary hover:bg-primary-fixed text-on-primary font-body text-xs font-semibold shadow-xs transition-all active:scale-95 cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs transition-all cursor-pointer"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Download .md</span>
@@ -167,3 +160,4 @@ ${
     </div>
   );
 };
+export default ExportBriefingModal;

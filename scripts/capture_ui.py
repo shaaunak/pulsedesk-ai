@@ -96,7 +96,25 @@ async def main():
                 shutil.copy(changes_shot, "docs/assets/05_pulsedesk_changes.png")
                 print(f"Changes saved to {changes_shot}")
 
-            # 6. Mobile Overview (390 x 844)
+            # 6. Executive Briefing Modal
+            overview_nav = page.locator("text='Overview'").first
+            if await overview_nav.is_visible():
+                await overview_nav.click()
+                await page.wait_for_timeout(600)
+
+            briefing_btn = page.locator("text='Export Briefing'").first
+            if await briefing_btn.is_visible():
+                await briefing_btn.click()
+                await page.wait_for_timeout(600)
+                briefing_shot = "docs/screenshots/briefing_modal_10_out_of_10.png"
+                await page.screenshot(path=briefing_shot, full_page=False)
+                shutil.copy(briefing_shot, "docs/assets/briefing_modal.png")
+                shutil.copy(briefing_shot, "docs/assets/07_pulsedesk_briefing_modal.png")
+                print(f"Briefing Modal saved to {briefing_shot}")
+                await page.keyboard.press("Escape")
+                await page.wait_for_timeout(300)
+
+            # 7. Mobile Overview (390 x 844)
             mobile_context = await browser.new_context(
                 viewport={"width": 390, "height": 844},
                 device_scale_factor=2,

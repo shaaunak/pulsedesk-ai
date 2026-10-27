@@ -8,14 +8,14 @@
 
 An intelligent Agentic RAG workspace that connects live project information, reasons across multiple data sources, remembers relevant context across sessions, and delivers evidence-backed answers with strict citation provenance.
 
-[![Python](https://img.shields.io/badge/Python-3.12-336269.svg?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.4-336269.svg?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-18.2-0B2224.svg?style=flat-square&logo=react&logoColor=93D4D8)](https://react.dev/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-05998B.svg?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![LangGraph](https://img.shields.io/badge/LangGraph-Agentic_Orchestrator-93D4D8.svg?style=flat-square&logoColor=0B2224)](https://langchain-ai.github.io/langgraph/)
-[![Model Context Protocol](https://img.shields.io/badge/MCP-2.x_Stdio_Protocol-336269.svg?style=flat-square)](https://modelcontextprotocol.io/)
-[![PostgreSQL](https://img.shields.io/badge/Storage-PostgreSQL_%2B_pgvector_%2F_SQLite-336269.svg?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-336269.svg?style=flat-square)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.12-3776AB.svg?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.4-3178C6.svg?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-18.2-2563EB.svg?style=flat-square&logo=react&logoColor=white)](https://react.dev/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688.svg?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![LangGraph](https://img.shields.io/badge/LangGraph-Agentic_Orchestrator-1D4ED8.svg?style=flat-square&logoColor=white)](https://langchain-ai.github.io/langgraph/)
+[![Model Context Protocol](https://img.shields.io/badge/MCP-2.x_Stdio_Protocol-0F172A.svg?style=flat-square)](https://modelcontextprotocol.io/)
+[![PostgreSQL](https://img.shields.io/badge/Storage-PostgreSQL_%2B_pgvector_%2F_SQLite-336791.svg?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-0F172A.svg?style=flat-square)](LICENSE)
 
 [Product Overview](#product-overview) •
 [System Architecture](#system-architecture) •
@@ -93,6 +93,15 @@ Conventional RAG applications fail in dynamic workplace environments. They opera
       </td>
     </tr>
   </table>
+</div>
+
+<br/>
+
+### 5. Grounded Executive Briefing Generator
+> Single-click synthesis generating stakeholder-ready Markdown status reports complete with root cause attribution, PR blast radius, and verified citation links.
+
+<div align="center">
+  <img src="docs/assets/07_pulsedesk_briefing_modal.png" alt="Executive Briefing Modal" width="85%" />
 </div>
 
 ---
@@ -255,7 +264,7 @@ sequenceDiagram
 |---|---|---|
 | **Frontend Framework** | **React 18 + Vite** | High-performance SPA with rapid hot module reloading and small bundle size (75 kB gzip). |
 | **Language & Typing** | **TypeScript 5.4** | Strict type safety for complex agent state, message streams, and evidence payloads. |
-| **Styling & Design System** | **Tailwind CSS 3.4** | Custom-themed dark-teal design token system (*Black Feather*, *Aqua Bloom*, *After the Storm*). |
+| **Styling & Design System** | **Tailwind CSS 3.4** | Modern light SaaS design system with slate neutrals, subtle borders, Inter typography, and semantic badge accents. |
 | **Iconography & UI** | **Lucide React + Motion** | Clean, accessible vector icons with subtle transition dynamics. |
 | **Backend Framework** | **Python 3.12 + FastAPI** | Asynchronous ASGI server with automatic OpenAPI schemas and high-throughput concurrency. |
 | **Agent Orchestrator** | **LangGraph 0.2** | Deterministic directed graphs for multi-stage LLM flows, tool loops, and bounded state transitions. |
